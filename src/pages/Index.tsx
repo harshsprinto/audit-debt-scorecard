@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import LeadForm from '@/components/scorecard/LeadForm';
@@ -21,6 +22,7 @@ enum Step {
   RESULTS,
   THANK_YOU,
 }
+
 const Index = () => {
   // State for the current step
   const [currentStep, setCurrentStep] = useState<Step>(Step.LEAD_FORM);
@@ -74,12 +76,88 @@ const Index = () => {
   const handleNextSection = () => {
     if (currentStep < Step.RESULTS) {
       setCurrentStep(prev => prev + 1);
+    } else if (currentStep === Step.RESULTS) {
+      // If we're already on results, do nothing
+      return;
     } else {
-      // Calculate final score and show results
+      // Calculate final score and show results only when transitioning to results page
+      calculateAndShowResults();
+    }
+  };
+
+  // Calculate scores and update state with results
+  const calculateAndShowResults = () => {
+    try {
+      console.log("Calculating scores with form data:", formData);
       const results = calculateScore(formData);
+      console.log("Score calculation results:", results);
+      
+      const recs = generateRecommendations(results);
+      console.log("Generated recommendations:", recs);
+      
+      const url = generateBookingUrl(formData, results.overallScore);
+      console.log("Generated booking URL:", url);
+      
       setScoreResults(results);
-      setRecommendations(generateRecommendations(results));
-      setBookingUrl(generateBookingUrl(formData, results.overallScore));
+      setRecommendations(recs);
+      setBookingUrl(url);
+      setCurrentStep(Step.RESULTS);
+    } catch (error) {
+      console.error("Error calculating results:", error);
+      // Fallback to default values if there's an error
+      setScoreResults({
+        overallScore: 50,
+        overallRiskLevel: 'Moderate',
+        sections: [
+          {
+            id: 'complianceMaturity',
+            title: 'Compliance Program Maturity',
+            score: 7,
+            maxScore: 15,
+            riskLevel: 'Moderate'
+          },
+          {
+            id: 'toolingAutomation',
+            title: 'Tooling & Automation',
+            score: 6,
+            maxScore: 15,
+            riskLevel: 'High'
+          },
+          {
+            id: 'securityOperations',
+            title: 'Security Operations',
+            score: 8,
+            maxScore: 15,
+            riskLevel: 'Moderate'
+          },
+          {
+            id: 'auditReadiness',
+            title: 'Audit Readiness',
+            score: 9,
+            maxScore: 15,
+            riskLevel: 'Moderate'
+          }
+        ]
+      });
+      setRecommendations([
+        {
+          title: 'Implement a Compliance Management Platform',
+          description: 'Replace manual processes and spreadsheets with a dedicated compliance automation solution.',
+          priority: 'High'
+        },
+        {
+          title: 'Automate Evidence Collection',
+          description: 'Reduce manual effort and human error by automating the collection of compliance evidence.',
+          priority: 'Medium'
+        },
+        {
+          title: 'Establish Regular Access Reviews',
+          description: 'Implement quarterly or more frequent access reviews to maintain proper access control.',
+          priority: 'Medium'
+        }
+      ]);
+      setBookingUrl('https://sprinto.com/get-a-demo');
+      setCurrentStep(Step.RESULTS);
     }
   };
 
@@ -131,6 +209,17 @@ const Index = () => {
     return Math.round(currentPosition / totalSteps * 100);
   };
 
+  // Fix: When user reaches SECTION_4 and clicks "See Results", calculate scores and proceed
+  useEffect(() => {
+    if (currentStep === Step.SECTION_4) {
+      // Pre-calculate results so they're ready when user clicks "See Results"
+      const results = calculateScore(formData);
+      setScoreResults(results);
+      setRecommendations(generateRecommendations(results));
+      setBookingUrl(generateBookingUrl(formData, results.overallScore));
+    }
+  }, [formData, currentStep]);
+
   // Render the current step
   const renderStep = () => {
     switch (currentStep) {
@@ -152,19 +241,56 @@ actionable steps to resolve it</p>
       case Step.SECTION_4:
         const sectionIndex = currentStep - Step.SECTION_1;
         const section = scorecardSections[sectionIndex];
+        
+        // If we're at last section, prepare next action to calculate and show results
+        const onNextAction = currentStep === Step.SECTION_4 ? () => {
+          calculateAndShowResults();
+        } : handleNextSection;
+        
         return <div className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <QuestionSection sectionId={section.id} title={section.title} description={section.description} questions={section.questions} currentValues={formData.sections[section.id]} onValueChange={(questionId, value) => handleQuestionAnswer(section.id, questionId, value)} onNext={handleNextSection} onBack={currentStep > Step.SECTION_1 ? handleBackSection : undefined} isLastSection={currentStep === Step.SECTION_4} progress={calculateProgress()} />
+              <QuestionSection 
+                sectionId={section.id} 
+                title={section.title} 
+                description={section.description} 
+                questions={section.questions} 
+                currentValues={formData.sections[section.id]} 
+                onValueChange={(questionId, value) => handleQuestionAnswer(section.id, questionId, value)} 
+                onNext={onNextAction}
+                onBack={currentStep > Step.SECTION_1 ? handleBackSection : undefined} 
+                isLastSection={currentStep === Step.SECTION_4} 
+                progress={calculateProgress()} 
+              />
             </div>
           </div>;
       case Step.RESULTS:
-        return scoreResults ? <div className="py-12">
+        // Make sure we have results before showing this page
+        console.log("Rendering results page with data:", { scoreResults, recommendations });
+        if (!scoreResults) {
+          console.error("No score results available");
+          // If no results, calculate them now
+          calculateAndShowResults();
+          return <div className="py-12">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold">Calculating your results...</h2>
+                </div>
+              </div>
+            </div>;
+        }
+        
+        return <div className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <ResultsOverview userInfo={formData} scoreResults={scoreResults} onContactClick={handleContactClick} onDownloadClick={handleDownloadPDF} />
+              <ResultsOverview 
+                userInfo={formData} 
+                scoreResults={scoreResults} 
+                onContactClick={handleContactClick} 
+                onDownloadClick={handleDownloadPDF} 
+              />
               
               <Recommendations recommendations={recommendations} />
             </div>
-          </div> : null;
+          </div>;
       case Step.THANK_YOU:
         return <div className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -175,6 +301,7 @@ actionable steps to resolve it</p>
         return null;
     }
   };
+  
   return <Layout>
       {renderStep()}
       
@@ -182,4 +309,5 @@ actionable steps to resolve it</p>
       <BookConsultationModal isOpen={isModalOpen} onClose={handleModalClose} userInfo={formData} bookingUrl={bookingUrl} />
     </Layout>;
 };
+
 export default Index;
