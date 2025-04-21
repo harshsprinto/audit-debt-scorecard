@@ -97,5 +97,18 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .gradient-orange {
+    background: linear-gradient(90deg, #FF6635 0%, #FFDA68 100%);
+  }
+  
+  .gradient-blue {
+    background: linear-gradient(90deg, #588BF1 0%, #A7C5FF 100%);
   }
 }
