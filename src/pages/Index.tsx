@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import LeadForm from '@/components/scorecard/LeadForm';
@@ -9,7 +8,7 @@ import BookConsultationModal from '@/components/scorecard/BookConsultationModal'
 import ThankYou from '@/components/scorecard/ThankYou';
 import { scorecardSections, Question } from '@/data/questions';
 import { FormData, UserInfo, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
-import { calculateScore, generateRecommendations, generateBookingUrl } from '@/utils/scorecardUtils';
+import { calculateScore, generateRecommendations } from '@/utils/scorecardUtils';
 import { downloadPDF } from '@/utils/pdfGenerator';
 
 // Define the steps of the scorecard flow
@@ -47,7 +46,7 @@ const Index = () => {
 
   // State for the consultation modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bookingUrl, setBookingUrl] = useState('');
+  const [bookingUrl] = useState('https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard');
 
   // Handle lead form submission
   const handleLeadFormSubmit = (userInfo: UserInfo) => {
@@ -95,12 +94,8 @@ const Index = () => {
       const recs = generateRecommendations(results);
       console.log("Generated recommendations:", recs);
       
-      const url = generateBookingUrl(formData, results.overallScore);
-      console.log("Generated booking URL:", url);
-      
       setScoreResults(results);
       setRecommendations(recs);
-      setBookingUrl(url);
       setCurrentStep(Step.RESULTS);
     } catch (error) {
       console.error("Error calculating results:", error);
@@ -156,7 +151,6 @@ const Index = () => {
           priority: 'Medium'
         }
       ]);
-      setBookingUrl('https://sprinto.com/get-a-demo');
       setCurrentStep(Step.RESULTS);
     }
   };
@@ -216,7 +210,6 @@ const Index = () => {
       const results = calculateScore(formData);
       setScoreResults(results);
       setRecommendations(generateRecommendations(results));
-      setBookingUrl(generateBookingUrl(formData, results.overallScore));
     }
   }, [formData, currentStep]);
 

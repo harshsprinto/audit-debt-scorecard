@@ -3,9 +3,7 @@ import { FormData, AuditDebtScore, RecommendationItem } from '@/types/scorecard'
 
 // In a real application, this would use a PDF generation library
 // like jsPDF, pdfmake, react-pdf, etc. to generate a real PDF.
-// For this demo, we'll create a fake "PDF generator" that creates a blob
-// that can be downloaded, but in reality it would be generated server-side
-// or using a client-side PDF library.
+// For this demo, we'll create a test PDF that can be opened.
 
 export const generatePDF = (
   userInfo: FormData,
@@ -13,9 +11,7 @@ export const generatePDF = (
   recommendations: RecommendationItem[]
 ): Promise<Blob> => {
   return new Promise((resolve) => {
-    // In a real implementation, this would generate an actual PDF.
-    // For now, we'll just create a text representation
-    
+    // Create a properly formatted text content for the PDF
     const content = `
 Sprinto Audit Debt Scorecard Report
 ===================================
@@ -56,13 +52,15 @@ Unaddressed audit debt can lead to:
 NEXT STEPS
 ---------
 Contact Sprinto to automate your compliance program and eliminate audit debt.
-Visit: www.sprinto.com/get-a-demo
+Visit: https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard
 
 © ${new Date().getFullYear()} Sprinto. All rights reserved.
     `;
     
-    // Create a blob that represents the "PDF"
-    const blob = new Blob([content], { type: 'application/pdf' });
+    // Create a blob with the correct MIME type for text content
+    // This ensures it can be opened by text editors, which is more reliable
+    // than attempting to generate a true PDF format without proper libraries
+    const blob = new Blob([content], { type: 'text/plain' });
     resolve(blob);
   });
 };
@@ -75,16 +73,17 @@ export const downloadPDF = async (
   try {
     const pdfBlob = await generatePDF(userInfo, scoreResults, recommendations);
     
-    // Create a download link and trigger the download
+    // Create a download link and trigger the download with .txt extension
+    // This ensures the file can be properly opened
     const url = URL.createObjectURL(pdfBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${userInfo.company.replace(/\s+/g, '_')}_Audit_Debt_Report.pdf`;
+    link.download = `${userInfo.company.replace(/\s+/g, '_')}_Audit_Debt_Report.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   } catch (error) {
-    console.error('Error generating PDF', error);
+    console.error('Error generating report', error);
   }
 };

@@ -22,11 +22,10 @@ const BookConsultationModal: FC<BookConsultationModalProps> = ({
   isOpen,
   onClose,
   userInfo,
-  bookingUrl,
 }) => {
   const handleBookingClick = () => {
-    // Open booking URL in new tab
-    window.open(bookingUrl, '_blank');
+    // Open booking URL with fixed UTM parameter
+    window.open('https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard', '_blank');
     
     // Show thank you page
     // In a real implementation, we might only show this after confirmation of booking
