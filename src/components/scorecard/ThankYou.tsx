@@ -62,7 +62,7 @@ const ThankYou: FC<ThankYouProps> = ({ userInfo, onDownloadReport }) => {
           
           <div className="bg-gray-50 p-4 rounded-lg text-center">
             <p className="text-sm text-gray-600">
-              Have questions before your consultation? Email us at <a href="mailto:hello@sprinto.com" className="text-sprinto-orange underline">hello@sprinto.com</a>
+              Have questions before your consultation? Email us at <a href="mailto:sales@sprinto.com" className="text-sprinto-orange underline">sales@sprinto.com</a>
             </p>
           </div>
         </CardContent>

@@ -1,9 +1,7 @@
 
 import { FormData, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
-
-// In a real application, this would use a PDF generation library
-// like jsPDF, pdfmake, react-pdf, etc. to generate a real PDF.
-// For this demo, we'll create a test PDF that can be opened.
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 export const generatePDF = (
   userInfo: FormData,
@@ -11,57 +9,131 @@ export const generatePDF = (
   recommendations: RecommendationItem[]
 ): Promise<Blob> => {
   return new Promise((resolve) => {
-    // Create a properly formatted text content for the PDF
-    const content = `
-Sprinto Audit Debt Scorecard Report
-===================================
-Generated on: ${new Date().toLocaleDateString()}
-
-CONTACT INFORMATION
-------------------
-Name: ${userInfo.fullName}
-Company: ${userInfo.company}
-Designation: ${userInfo.designation}
-Email: ${userInfo.email}
-
-AUDIT DEBT ASSESSMENT RESULTS
-----------------------------
-Overall Risk Level: ${scoreResults.overallRiskLevel} (${scoreResults.overallScore}%)
-
-SECTION SCORES
--------------
-${scoreResults.sections.map(section => 
-  `${section.title}: ${section.riskLevel} (${Math.round((section.score / section.maxScore) * 100)}%)`
-).join('\n')}
-
-KEY RECOMMENDATIONS
------------------
-${recommendations.map(rec => 
-  `[${rec.priority} Priority] ${rec.title}\n${rec.description}`
-).join('\n\n')}
-
-BUSINESS IMPACT
--------------
-Unaddressed audit debt can lead to:
-- Failed compliance audits
-- Lost business opportunities
-- Costly remediation efforts
-- Security vulnerabilities
-- Operational inefficiencies
-
-NEXT STEPS
----------
-Contact Sprinto to automate your compliance program and eliminate audit debt.
-Visit: https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard
-
-© ${new Date().getFullYear()} Sprinto. All rights reserved.
-    `;
+    // Create a new PDF document
+    const doc = new jsPDF();
     
-    // Create a blob with the correct MIME type for text content
-    // This ensures it can be opened by text editors, which is more reliable
-    // than attempting to generate a true PDF format without proper libraries
-    const blob = new Blob([content], { type: 'text/plain' });
-    resolve(blob);
+    // Add Sprinto branding
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Add title with Sprinto orange color
+    doc.setTextColor(255, 102, 53); // Sprinto Orange #FF6635
+    doc.setFontSize(24);
+    doc.text('Sprinto Audit Debt Scorecard', pageWidth / 2, 20, { align: 'center' });
+    
+    // Add date
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, pageWidth / 2, 30, { align: 'center' });
+    
+    // Add horizontal line
+    doc.setDrawColor(255, 102, 53); // Sprinto Orange
+    doc.setLineWidth(0.5);
+    doc.line(20, 35, pageWidth - 20, 35);
+    
+    // Contact Information
+    doc.setFontSize(14);
+    doc.setTextColor(88, 139, 241); // Sprinto Blue #588BF1
+    doc.text('CONTACT INFORMATION', 20, 45);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.text(`Name: ${userInfo.fullName}`, 20, 55);
+    doc.text(`Company: ${userInfo.company}`, 20, 61);
+    doc.text(`Designation: ${userInfo.designation}`, 20, 67);
+    doc.text(`Email: ${userInfo.email}`, 20, 73);
+    
+    // Assessment Results
+    doc.setFontSize(14);
+    doc.setTextColor(88, 139, 241); // Sprinto Blue
+    doc.text('AUDIT DEBT ASSESSMENT RESULTS', 20, 85);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.text(`Overall Risk Level: ${scoreResults.overallRiskLevel} (${scoreResults.overallScore}%)`, 20, 95);
+    
+    // Section Scores
+    doc.setFontSize(14);
+    doc.setTextColor(88, 139, 241); // Sprinto Blue
+    doc.text('SECTION SCORES', 20, 110);
+    
+    // Create a table for the section scores
+    const sectionData = scoreResults.sections.map(section => [
+      section.title, 
+      section.riskLevel, 
+      `${Math.round((section.score / section.maxScore) * 100)}%`
+    ]);
+    
+    // @ts-ignore - jspdf-autotable types
+    doc.autoTable({
+      startY: 115,
+      head: [['Section', 'Risk Level', 'Score']],
+      body: sectionData,
+      theme: 'striped',
+      headStyles: { fillColor: [255, 102, 53] } // Sprinto Orange
+    });
+    
+    // Recommendations
+    doc.setFontSize(14);
+    doc.setTextColor(88, 139, 241); // Sprinto Blue
+    // @ts-ignore - jspdf-autotable types
+    doc.text('KEY RECOMMENDATIONS', 20, doc.autoTable.previous.finalY + 15);
+    
+    let yPos = doc.autoTable.previous.finalY + 25;
+    recommendations.forEach((rec, index) => {
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${index + 1}. [${rec.priority} Priority] ${rec.title}`, 20, yPos);
+      
+      doc.setFontSize(9);
+      doc.setTextColor(90, 90, 90);
+      const description = doc.splitTextToSize(rec.description, pageWidth - 40);
+      doc.text(description, 25, yPos + 6);
+      
+      yPos += 15 + (description.length * 5);
+    });
+    
+    // Business Impact
+    yPos += 5;
+    doc.setFontSize(14);
+    doc.setTextColor(88, 139, 241); // Sprinto Blue
+    doc.text('BUSINESS IMPACT', 20, yPos);
+    
+    yPos += 10;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Unaddressed audit debt can lead to:', 20, yPos);
+    yPos += 6;
+    doc.text('• Failed compliance audits', 25, yPos);
+    yPos += 6;
+    doc.text('• Lost business opportunities', 25, yPos);
+    yPos += 6;
+    doc.text('• Costly remediation efforts', 25, yPos);
+    yPos += 6;
+    doc.text('• Security vulnerabilities', 25, yPos);
+    yPos += 6;
+    doc.text('• Operational inefficiencies', 25, yPos);
+    
+    // CTA
+    yPos += 15;
+    doc.setFillColor(255, 102, 53); // Sprinto Orange
+    doc.rect(20, yPos, pageWidth - 40, 30, 'F');
+    
+    doc.setTextColor(255, 255, 255); // White
+    doc.setFontSize(12);
+    doc.text('NEXT STEPS', pageWidth / 2, yPos + 10, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.text('Contact Sprinto to automate your compliance program and eliminate audit debt.', pageWidth / 2, yPos + 20, { align: 'center' });
+    doc.text('Visit: https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard', pageWidth / 2, yPos + 25, { align: 'center' });
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`© ${new Date().getFullYear()} Sprinto. All rights reserved.`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+    
+    // Convert to blob and resolve promise
+    const pdfBlob = doc.output('blob');
+    resolve(pdfBlob);
   });
 };
 
@@ -73,12 +145,11 @@ export const downloadPDF = async (
   try {
     const pdfBlob = await generatePDF(userInfo, scoreResults, recommendations);
     
-    // Create a download link and trigger the download with .txt extension
-    // This ensures the file can be properly opened
+    // Create a download link and trigger the download with .pdf extension
     const url = URL.createObjectURL(pdfBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${userInfo.company.replace(/\s+/g, '_')}_Audit_Debt_Report.txt`;
+    link.download = `${userInfo.company.replace(/\s+/g, '_')}_Audit_Debt_Report.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
