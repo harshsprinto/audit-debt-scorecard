@@ -122,7 +122,21 @@ const ResultsOverview: FC<ResultsOverviewProps> = ({
               Audit debt can lead to failed audits, lost deals, operational inefficiencies, and heightened security risks. Addressing these issues now can save significant time and resources in the future.
             </p>
           </div>
-          
+
+          {/* New CTA Section */}
+          <div className="bg-sprinto-orange p-6 rounded-lg text-white text-center shadow-lg">
+            <h3 className="text-2xl font-bold mb-3">Ready to Eliminate Your Audit Debt?</h3>
+            <p className="mb-5 max-w-xl mx-auto">
+              Sprinto is here to help you automate compliance and reduce audit debt efficiently. Book a consultation with our experts to get started.
+            </p>
+            <Button
+              onClick={onContactClick}
+              className="bg-white text-sprinto-orange font-semibold px-8 py-3 rounded shadow hover:bg-gray-100 transition"
+            >
+              Talk to Our Experts
+            </Button>
+          </div>
+
           <div className="flex flex-col md:flex-row gap-4 mt-8">
             <Button 
               onClick={onContactClick}
