@@ -1,9 +1,10 @@
+
 import { FormData, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import autoTable from 'jspdf-autotable';
 
-// Extend the jsPDF type to include autoTable with proper return type
+// Extend the jsPDF type to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
     autoTable: typeof autoTable;
@@ -73,6 +74,7 @@ export const generatePDF = (
       `${Math.round((section.score / section.maxScore) * 100)}%`
     ]);
     
+    // Use the autoTable method with the correct formatting
     doc.autoTable({
       head: [['Section', 'Risk Level', 'Score']],
       body: sectionData,
