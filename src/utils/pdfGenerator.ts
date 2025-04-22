@@ -1,4 +1,3 @@
-
 import { FormData, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -75,9 +74,9 @@ export const generatePDF = (
     ]);
     
     doc.autoTable({
-      startY: 115,
       head: [['Section', 'Risk Level', 'Score']],
       body: sectionData,
+      startY: 115,
       theme: 'striped',
       headStyles: { fillColor: [155, 135, 245] } // Primary Purple
     });
