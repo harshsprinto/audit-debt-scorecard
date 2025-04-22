@@ -4,10 +4,13 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import autoTable from 'jspdf-autotable';
 
-// Extend the jsPDF type to include autoTable
+// Extend the jsPDF type to include autoTable with proper return type
 declare module 'jspdf' {
   interface jsPDF {
     autoTable: typeof autoTable;
+    lastAutoTable: {
+      finalY: number;
+    };
   }
 }
 
@@ -82,9 +85,9 @@ export const generatePDF = (
     // Recommendations
     doc.setFontSize(14);
     doc.setTextColor(126, 105, 171); // Secondary Purple
-    doc.text('KEY RECOMMENDATIONS', 20, doc.autoTable.previous.finalY + 15);
+    doc.text('KEY RECOMMENDATIONS', 20, doc.lastAutoTable.finalY + 15);
     
-    let yPos = doc.autoTable.previous.finalY + 25;
+    let yPos = doc.lastAutoTable.finalY + 25;
     recommendations.forEach((rec, index) => {
       doc.setFontSize(11);
       doc.setTextColor(0, 0, 0);
