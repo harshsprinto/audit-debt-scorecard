@@ -23,10 +23,20 @@ export const generatePDF = (
     // Create a new PDF document
     const doc = new jsPDF();
     
-    // Add Sprinto branding
+    // Get page dimensions
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     
-    // Add title with Sprinto purple color
+    // Function to check if we need a new page
+    const checkForNewPage = (yPosition: number, neededSpace: number = 40) => {
+      if (yPosition + neededSpace > pageHeight - 20) {
+        doc.addPage();
+        return 20; // Reset Y position to top of new page with margin
+      }
+      return yPosition;
+    };
+    
+    // Add Sprinto branding
     doc.setTextColor(155, 135, 245); // Primary Purple: #9b87f5
     doc.setFontSize(24);
     doc.text('Sprinto Audit Debt Scorecard', pageWidth / 2, 20, { align: 'center' });
@@ -84,12 +94,19 @@ export const generatePDF = (
     });
     
     // Recommendations
+    let yPos = doc.lastAutoTable.finalY + 15;
+    yPos = checkForNewPage(yPos, 15);
+    
     doc.setFontSize(14);
     doc.setTextColor(126, 105, 171); // Secondary Purple
-    doc.text('KEY RECOMMENDATIONS', 20, doc.lastAutoTable.finalY + 15);
+    doc.text('KEY RECOMMENDATIONS', 20, yPos);
     
-    let yPos = doc.lastAutoTable.finalY + 25;
+    yPos += 10;
+    
     recommendations.forEach((rec, index) => {
+      // Check if we need to add a new page before adding this recommendation
+      yPos = checkForNewPage(yPos, 25); // Need at least 25 units for a recommendation
+      
       doc.setFontSize(11);
       doc.setTextColor(0, 0, 0);
       doc.text(`${index + 1}. [${rec.priority} Priority] ${rec.title}`, 20, yPos);
@@ -97,13 +114,18 @@ export const generatePDF = (
       doc.setFontSize(9);
       doc.setTextColor(90, 90, 90);
       const description = doc.splitTextToSize(rec.description, pageWidth - 40);
+      
+      // Check if description will fit on current page
+      yPos = checkForNewPage(yPos, description.length * 5 + 10);
+      
       doc.text(description, 25, yPos + 6);
       
       yPos += 15 + (description.length * 5);
     });
     
     // Business Impact
-    yPos += 5;
+    yPos = checkForNewPage(yPos, 60); // Check if we need a new page for business impact section
+    
     doc.setFontSize(14);
     doc.setTextColor(126, 105, 171); // Secondary Purple
     doc.text('BUSINESS IMPACT', 20, yPos);
@@ -112,34 +134,51 @@ export const generatePDF = (
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
     doc.text('Unaddressed audit debt can lead to:', 20, yPos);
-    yPos += 6;
-    doc.text('• Failed compliance audits', 25, yPos);
-    yPos += 6;
-    doc.text('• Lost business opportunities', 25, yPos);
-    yPos += 6;
-    doc.text('• Costly remediation efforts', 25, yPos);
-    yPos += 6;
-    doc.text('• Security vulnerabilities', 25, yPos);
-    yPos += 6;
-    doc.text('• Operational inefficiencies', 25, yPos);
     
-    // CTA
+    // Add impact points with enough spacing and page breaks if needed
+    const impactPoints = [
+      '• Failed compliance audits',
+      '• Lost business opportunities',
+      '• Costly remediation efforts',
+      '• Security vulnerabilities',
+      '• Operational inefficiencies'
+    ];
+    
+    for (const point of impactPoints) {
+      yPos += 6;
+      yPos = checkForNewPage(yPos, 10);
+      doc.text(point, 25, yPos);
+    }
+    
+    // Add more prominent CTA with a clickable link
+    yPos = checkForNewPage(yPos, 40); // Make sure we have enough space for CTA
     yPos += 15;
-    doc.setFillColor(155, 135, 245); // Primary Purple
-    doc.rect(20, yPos, pageWidth - 40, 30, 'F');
     
+    // Create an eye-catching CTA box
+    doc.setFillColor(249, 115, 22); // Bright Orange: #F97316
+    doc.roundedRect(20, yPos, pageWidth - 40, 35, 3, 3, 'F');
+    
+    // Add CTA text
     doc.setTextColor(255, 255, 255); // White
-    doc.setFontSize(12);
-    doc.text('NEXT STEPS', pageWidth / 2, yPos + 10, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('TAKE ACTION NOW', pageWidth / 2, yPos + 13, { align: 'center' });
     
     doc.setFontSize(10);
-    doc.text('Contact Sprinto to automate your compliance program and eliminate audit debt.', pageWidth / 2, yPos + 20, { align: 'center' });
-    doc.text('Visit: https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard', pageWidth / 2, yPos + 25, { align: 'center' });
+    const ctaText = 'Schedule a demo to discover how Sprinto can eliminate audit debt for your business';
+    doc.text(ctaText, pageWidth / 2, yPos + 22, { align: 'center' });
     
-    // Footer
+    // Add clickable URL
+    const ctaUrl = 'https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard';
+    doc.text(ctaUrl, pageWidth / 2, yPos + 30, { align: 'center' });
+    
+    // Make the entire box clickable
+    doc.link(20, yPos, pageWidth - 40, 35, { url: ctaUrl });
+    
+    // Footer on the last page
+    yPos = pageHeight - 15;
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
-    doc.text(`© ${new Date().getFullYear()} Sprinto. All rights reserved.`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+    doc.text(`© ${new Date().getFullYear()} Sprinto. All rights reserved.`, pageWidth / 2, yPos, { align: 'center' });
     
     // Convert to blob and resolve promise
     const pdfBlob = doc.output('blob');
