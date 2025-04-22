@@ -74,8 +74,8 @@ export const generatePDF = (
       `${Math.round((section.score / section.maxScore) * 100)}%`
     ]);
     
-    // Use the autoTable method with the correct formatting
-    doc.autoTable({
+    // Use the autoTable plugin correctly
+    autoTable(doc, {
       head: [['Section', 'Risk Level', 'Score']],
       body: sectionData,
       startY: 115,
