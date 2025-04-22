@@ -2,6 +2,14 @@
 import { FormData, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
+
+// Extend the jsPDF type to include autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: typeof autoTable;
+  }
+}
 
 export const generatePDF = (
   userInfo: FormData,
@@ -15,8 +23,8 @@ export const generatePDF = (
     // Add Sprinto branding
     const pageWidth = doc.internal.pageSize.getWidth();
     
-    // Add title with Sprinto orange color
-    doc.setTextColor(255, 102, 53); // Sprinto Orange #FF6635
+    // Add title with Sprinto purple color
+    doc.setTextColor(155, 135, 245); // Primary Purple: #9b87f5
     doc.setFontSize(24);
     doc.text('Sprinto Audit Debt Scorecard', pageWidth / 2, 20, { align: 'center' });
     
@@ -26,13 +34,13 @@ export const generatePDF = (
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, pageWidth / 2, 30, { align: 'center' });
     
     // Add horizontal line
-    doc.setDrawColor(255, 102, 53); // Sprinto Orange
+    doc.setDrawColor(155, 135, 245); // Primary Purple
     doc.setLineWidth(0.5);
     doc.line(20, 35, pageWidth - 20, 35);
     
     // Contact Information
     doc.setFontSize(14);
-    doc.setTextColor(88, 139, 241); // Sprinto Blue #588BF1
+    doc.setTextColor(126, 105, 171); // Secondary Purple: #7E69AB
     doc.text('CONTACT INFORMATION', 20, 45);
     
     doc.setTextColor(0, 0, 0);
@@ -44,7 +52,7 @@ export const generatePDF = (
     
     // Assessment Results
     doc.setFontSize(14);
-    doc.setTextColor(88, 139, 241); // Sprinto Blue
+    doc.setTextColor(126, 105, 171); // Secondary Purple
     doc.text('AUDIT DEBT ASSESSMENT RESULTS', 20, 85);
     
     doc.setTextColor(0, 0, 0);
@@ -53,7 +61,7 @@ export const generatePDF = (
     
     // Section Scores
     doc.setFontSize(14);
-    doc.setTextColor(88, 139, 241); // Sprinto Blue
+    doc.setTextColor(126, 105, 171); // Secondary Purple
     doc.text('SECTION SCORES', 20, 110);
     
     // Create a table for the section scores
@@ -63,19 +71,17 @@ export const generatePDF = (
       `${Math.round((section.score / section.maxScore) * 100)}%`
     ]);
     
-    // @ts-ignore - jspdf-autotable types
     doc.autoTable({
       startY: 115,
       head: [['Section', 'Risk Level', 'Score']],
       body: sectionData,
       theme: 'striped',
-      headStyles: { fillColor: [255, 102, 53] } // Sprinto Orange
+      headStyles: { fillColor: [155, 135, 245] } // Primary Purple
     });
     
     // Recommendations
     doc.setFontSize(14);
-    doc.setTextColor(88, 139, 241); // Sprinto Blue
-    // @ts-ignore - jspdf-autotable types
+    doc.setTextColor(126, 105, 171); // Secondary Purple
     doc.text('KEY RECOMMENDATIONS', 20, doc.autoTable.previous.finalY + 15);
     
     let yPos = doc.autoTable.previous.finalY + 25;
@@ -95,7 +101,7 @@ export const generatePDF = (
     // Business Impact
     yPos += 5;
     doc.setFontSize(14);
-    doc.setTextColor(88, 139, 241); // Sprinto Blue
+    doc.setTextColor(126, 105, 171); // Secondary Purple
     doc.text('BUSINESS IMPACT', 20, yPos);
     
     yPos += 10;
@@ -115,7 +121,7 @@ export const generatePDF = (
     
     // CTA
     yPos += 15;
-    doc.setFillColor(255, 102, 53); // Sprinto Orange
+    doc.setFillColor(155, 135, 245); // Primary Purple
     doc.rect(20, yPos, pageWidth - 40, 30, 'F');
     
     doc.setTextColor(255, 255, 255); // White
