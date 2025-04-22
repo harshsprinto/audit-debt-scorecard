@@ -31,8 +31,8 @@ export const generatePDF = (
       return yPosition;
     };
     
-    // Set Sprinto Orange color
-    const sprintoOrange = [249, 115, 22]; // RGB
+    // Set Sprinto Orange color - fixed as tuple of exactly 3 elements
+    const sprintoOrange: [number, number, number] = [249, 115, 22]; // RGB
     
     // Title and header
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
@@ -91,7 +91,7 @@ export const generatePDF = (
       body: sectionData,
       startY: yPos + 15,
       theme: 'striped',
-      headStyles: { fillColor: sprintoOrange },
+      headStyles: { fillColor: sprintoOrange as [number, number, number] },
       styles: { cellPadding: 2 },
       margin: { top: yPos + 15 }
     });
