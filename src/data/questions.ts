@@ -52,6 +52,17 @@ export const scorecardSections = [
           { value: 'outdated', label: 'Yes, but they\'re mostly outdated' },
           { value: 'none', label: 'No formal documentation' }
         ]
+      },
+      {
+        id: 'trainingFrequency',
+        text: 'How frequently are employees trained on compliance best practices?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'quarterly', label: 'Quarterly or more frequent' },
+          { value: 'biannual', label: 'Biannually' },
+          { value: 'annual', label: 'Annually' },
+          { value: 'adhoc', label: 'Ad-hoc or never' }
+        ]
       }
     ]
   },
@@ -73,32 +84,43 @@ export const scorecardSections = [
       },
       {
         id: 'complianceTool',
-        text: 'Do you use a compliance management tool today?',
+        text: 'What tools are in place for compliance management?',
         type: 'select' as QuestionType,
         options: [
-          { value: 'dedicated', label: 'Yes, a dedicated compliance platform' },
-          { value: 'general', label: 'Yes, but general tools (Jira, etc.)' },
-          { value: 'spreadsheets', label: 'We use spreadsheets and documents' },
+          { value: 'dedicated', label: 'Dedicated compliance platform with automation' },
+          { value: 'general', label: 'General tools (Jira, ticketing systems, etc.)' },
+          { value: 'spreadsheets', label: 'Spreadsheets and documents' },
           { value: 'none', label: 'No tools in place' }
         ]
       },
       {
         id: 'evidenceCollection',
-        text: 'How is audit evidence collected today?',
+        text: 'How automated is evidence collection across frameworks?',
         type: 'select' as QuestionType,
         options: [
-          { value: 'automated', label: 'Automatically collected and stored' },
+          { value: 'automated', label: 'Automatically collected with real-time updates' },
           { value: 'centralizedManual', label: 'Manually collected but centrally stored' },
           { value: 'adhoc', label: 'Ad-hoc collection when needed' },
           { value: 'none', label: 'We don\'t formally collect evidence' }
+        ]
+      },
+      {
+        id: 'complianceGaps',
+        text: 'Are there automated alerts for compliance gaps or control failures?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'realtime', label: 'Yes, real-time automated alerts' },
+          { value: 'scheduled', label: 'Yes, scheduled automated checks' },
+          { value: 'manual', label: 'No, gaps are identified manually' },
+          { value: 'none', label: 'No monitoring for compliance gaps' }
         ]
       }
     ]
   },
   {
     id: 'securityOperations',
-    title: 'Security Operations',
-    description: 'Let\'s evaluate your security operations practices.',
+    title: 'Security Operations & Controls',
+    description: 'Let\'s evaluate your security operations and control maturity.',
     questions: [
       {
         id: 'accessReviews',
@@ -132,13 +154,24 @@ export const scorecardSections = [
           { value: 'informal', label: 'Informal processes only' },
           { value: 'none', label: 'No incident response plan' }
         ]
+      },
+      {
+        id: 'controlMaturity',
+        text: 'How are your controls documented and reviewed?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'comprehensiveReviewed', label: 'Comprehensively documented and regularly reviewed' },
+          { value: 'documented', label: 'Documented but not regularly reviewed' },
+          { value: 'partial', label: 'Partially documented' },
+          { value: 'none', label: 'Minimal or no documentation' }
+        ]
       }
     ]
   },
   {
     id: 'auditReadiness',
-    title: 'Audit Readiness',
-    description: 'Let\'s assess how prepared you are for compliance audits.',
+    title: 'Audit Readiness & Risk Management',
+    description: 'Let\'s assess how prepared you are for compliance audits and how you manage risks.',
     questions: [
       {
         id: 'lastAudit',
@@ -171,6 +204,68 @@ export const scorecardSections = [
           { value: 'rarely', label: 'Rarely' },
           { value: 'occasionally', label: 'Occasionally' },
           { value: 'frequently', label: 'Frequently' }
+        ]
+      },
+      {
+        id: 'riskAssessment',
+        text: 'How often are risk assessments conducted?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'quarterly', label: 'Quarterly or more frequently' },
+          { value: 'biannual', label: 'Biannually' },
+          { value: 'annual', label: 'Annually' },
+          { value: 'adhoc', label: 'Ad-hoc or never' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'changeManagement',
+    title: 'Change Management & Vendor Risk',
+    description: 'Let\'s evaluate your change management processes and vendor risk management.',
+    questions: [
+      {
+        id: 'changeApproval',
+        text: 'How are infrastructure or IT changes approved and documented?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'formalAutomated', label: 'Formal process with automated workflow' },
+          { value: 'formalManual', label: 'Formal process with manual documentation' },
+          { value: 'informal', label: 'Informal process' },
+          { value: 'none', label: 'No formal approval process' }
+        ]
+      },
+      {
+        id: 'changeRiskTracking',
+        text: 'Is there a clear protocol for tracking change-related risks?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'comprehensive', label: 'Yes, comprehensive risk tracking' },
+          { value: 'basic', label: 'Yes, basic risk tracking' },
+          { value: 'minimal', label: 'Minimal risk tracking' },
+          { value: 'none', label: 'No risk tracking' }
+        ]
+      },
+      {
+        id: 'vendorAssessment',
+        text: 'How are vendors assessed before onboarding?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'comprehensive', label: 'Comprehensive security and compliance review' },
+          { value: 'basic', label: 'Basic security review' },
+          { value: 'minimal', label: 'Minimal or questionnaire-only review' },
+          { value: 'none', label: 'No formal assessment' }
+        ]
+      },
+      {
+        id: 'vendorMonitoring',
+        text: 'Is there an ongoing vendor risk monitoring process?',
+        type: 'select' as QuestionType,
+        options: [
+          { value: 'automated', label: 'Automated continuous monitoring' },
+          { value: 'periodic', label: 'Periodic reassessments' },
+          { value: 'annual', label: 'Annual review only' },
+          { value: 'none', label: 'No ongoing monitoring' }
         ]
       }
     ]
