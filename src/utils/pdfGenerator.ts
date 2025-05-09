@@ -1,7 +1,5 @@
-
 import { FormData, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import autoTable from 'jspdf-autotable';
 
 declare module 'jspdf' {
@@ -31,7 +29,7 @@ export const generatePDF = (
       return yPosition;
     };
     
-    // Set Sprinto Orange color - fixed as tuple of exactly 3 elements
+    // Set Sprinto Orange color - defined as a tuple of exactly 3 elements
     const sprintoOrange: [number, number, number] = [249, 115, 22]; // RGB
     
     // Title and header
@@ -99,7 +97,7 @@ export const generatePDF = (
       body: sectionData,
       startY: yPos + 12,
       theme: 'striped',
-      headStyles: { fillColor: sprintoOrange as [number, number, number] },
+      headStyles: { fillColor: sprintoOrange },
       styles: { cellPadding: 2, fontSize: 8 },
       margin: { top: yPos + 12 },
       columnStyles: {
