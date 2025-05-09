@@ -18,6 +18,7 @@ enum Step {
   SECTION_2,
   SECTION_3,
   SECTION_4,
+  SECTION_5,
   RESULTS,
   THANK_YOU,
 }
@@ -36,7 +37,8 @@ const Index = () => {
       complianceMaturity: {},
       toolingAutomation: {},
       securityOperations: {},
-      auditReadiness: {}
+      auditReadiness: {},
+      changeManagement: {}
     }
   });
 
@@ -131,6 +133,13 @@ const Index = () => {
             score: 9,
             maxScore: 15,
             riskLevel: 'Moderate'
+          },
+          {
+            id: 'changeManagement',
+            title: 'Change Management & Vendor Risk',
+            score: 8,
+            maxScore: 15,
+            riskLevel: 'Moderate'
           }
         ]
       });
@@ -198,14 +207,14 @@ const Index = () => {
 
   // Calculate progress percentage
   const calculateProgress = () => {
-    const totalSteps = 4; // Four sections in our questionnaire 
+    const totalSteps = 5; // Five sections in our questionnaire 
     const currentPosition = currentStep - Step.SECTION_1;
     return Math.round(currentPosition / totalSteps * 100);
   };
 
-  // Fix: When user reaches SECTION_4 and clicks "See Results", calculate scores and proceed
+  // Fix: When user reaches SECTION_5 and clicks "See Results", calculate scores and proceed
   useEffect(() => {
-    if (currentStep === Step.SECTION_4) {
+    if (currentStep === Step.SECTION_5) {
       // Pre-calculate results so they're ready when user clicks "See Results"
       const results = calculateScore(formData);
       setScoreResults(results);
@@ -232,11 +241,12 @@ actionable steps to resolve it</p>
       case Step.SECTION_2:
       case Step.SECTION_3:
       case Step.SECTION_4:
+      case Step.SECTION_5:
         const sectionIndex = currentStep - Step.SECTION_1;
         const section = scorecardSections[sectionIndex];
         
         // If we're at last section, prepare next action to calculate and show results
-        const onNextAction = currentStep === Step.SECTION_4 ? () => {
+        const onNextAction = currentStep === Step.SECTION_5 ? () => {
           calculateAndShowResults();
         } : handleNextSection;
         
@@ -251,7 +261,7 @@ actionable steps to resolve it</p>
                 onValueChange={(questionId, value) => handleQuestionAnswer(section.id, questionId, value)} 
                 onNext={onNextAction}
                 onBack={currentStep > Step.SECTION_1 ? handleBackSection : undefined} 
-                isLastSection={currentStep === Step.SECTION_4} 
+                isLastSection={currentStep === Step.SECTION_5} 
                 progress={calculateProgress()} 
               />
             </div>

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Question } from '@/data/questions';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 interface QuestionSectionProps {
   sectionId: string;
@@ -140,53 +141,55 @@ const QuestionSection: FC<QuestionSectionProps> = ({
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="mb-4">
-        <div className="h-2 w-full bg-gray-200 rounded-full">
-          <div 
-            className="h-2 rounded-full bg-sprinto-orange" 
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {questions.map(question => (
-            <div key={question.id} className="space-y-2">
-              <Label className="font-medium block mb-2">{question.text}</Label>
-              {renderQuestion(question)}
-            </div>
-          ))}
-          
-          <div className="flex justify-between mt-6">
-            {onBack ? (
-              <Button
-                variant="outline"
-                onClick={onBack}
-              >
-                Back
-              </Button>
-            ) : (
-              <div></div>
-            )}
-            
-            <Button
-              onClick={onNext}
-              disabled={!isComplete}
-              className="bg-sprinto-orange hover:bg-opacity-90 text-white"
-            >
-              {isLastSection ? 'See Results' : 'Next'}
-            </Button>
+    <TooltipProvider>
+      <div className="w-full max-w-3xl mx-auto">
+        <div className="mb-4">
+          <div className="h-2 w-full bg-gray-200 rounded-full">
+            <div 
+              className="h-2 rounded-full bg-sprinto-orange" 
+              style={{ width: `${progress}%` }}
+            />
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {questions.map(question => (
+              <div key={question.id} className="space-y-2">
+                <Label className="font-medium block mb-2">{question.text}</Label>
+                {renderQuestion(question)}
+              </div>
+            ))}
+            
+            <div className="flex justify-between mt-6">
+              {onBack ? (
+                <Button
+                  variant="outline"
+                  onClick={onBack}
+                >
+                  Back
+                </Button>
+              ) : (
+                <div></div>
+              )}
+              
+              <Button
+                onClick={onNext}
+                disabled={!isComplete}
+                className="bg-sprinto-orange hover:bg-opacity-90 text-white"
+              >
+                {isLastSection ? 'See Results' : 'Next'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </TooltipProvider>
   );
 };
 
