@@ -60,46 +60,46 @@ export const generatePDF = (
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(9);
     
-    // Using 2 column layout for all contact info
-    doc.text(`Name: ${userInfo.fullName}`, 20, headerY + 22);
-    doc.text(`Company: ${userInfo.company}`, pageWidth/2, headerY + 22);
+    // Using 2 column layout for all contact info with increased vertical spacing
+    doc.text(`Name: ${userInfo.fullName}`, 20, headerY + 25);
+    doc.text(`Company: ${userInfo.company}`, pageWidth/2, headerY + 25);
     
-    // Format designation with text wrapping
+    // Format designation with text wrapping and increased vertical spacing
     const designation = `Designation: ${userInfo.designation}`;
     const designationWrapped = doc.splitTextToSize(designation, pageWidth/2 - 25);
-    doc.text(designationWrapped, 20, headerY + 27);
+    doc.text(designationWrapped, 20, headerY + 35);
     
-    // Place email on the right side
-    doc.text(`Email: ${userInfo.email}`, pageWidth/2, headerY + 27);
+    // Place email on the right side with proper spacing
+    doc.text(`Email: ${userInfo.email}`, pageWidth/2, headerY + 35);
     
     // Adjust y position based on height of contact info
-    let yPos = headerY + 35;
+    let yPos = headerY + 45;
     
-    // Audit Assessment Results section - more compact
+    // Audit Assessment Results section - more compact but with better spacing
     doc.setFontSize(12);
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
     doc.text('AUDIT DEBT ASSESSMENT RESULTS', 20, yPos);
     
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
-    doc.text(`Overall Risk Level: ${scoreResults.overallRiskLevel} (${scoreResults.overallScore}%)`, 20, yPos + 7);
+    doc.text(`Overall Risk Level: ${scoreResults.overallRiskLevel} (${scoreResults.overallScore}%)`, 20, yPos + 10);
     
-    // Create section data for the table
+    // Create section data for the table with "Risk" appended to section titles
     const sectionData = scoreResults.sections.map(section => [
-      section.title, 
+      `${section.title} Risk`, 
       section.riskLevel, 
       `${Math.round((section.score / section.maxScore) * 100)}%`
     ]);
     
-    // Compact table for results
+    // Compact table for results with better spacing
     autoTable(doc, {
       head: [['Section', 'Risk Level', 'Score']],
       body: sectionData,
-      startY: yPos + 12,
+      startY: yPos + 15,
       theme: 'striped',
       headStyles: { fillColor: sprintoOrange },
-      styles: { cellPadding: 2, fontSize: 8 },
-      margin: { top: yPos + 12 },
+      styles: { cellPadding: 3, fontSize: 8 },
+      margin: { top: yPos + 15 },
       columnStyles: {
         0: { cellWidth: 90 },
         1: { cellWidth: 45 },
@@ -107,31 +107,36 @@ export const generatePDF = (
       }
     });
     
-    yPos = doc.lastAutoTable.finalY + 8;
+    yPos = doc.lastAutoTable.finalY + 10;
     
-    // Key Recommendations section - more compact
+    // Key Recommendations section - with better spacing
+    yPos = checkForNewPage(yPos, 60);
     doc.setFontSize(12);
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
     doc.text('KEY RECOMMENDATIONS', 20, yPos);
     
-    yPos += 7;
+    yPos += 10;
     
-    // Show limited recommendations with more compact formatting
-    const maxRecsToShow = 3; // Show up to 3 recommendations to fit on one page
+    // Show recommendations with more space between items
+    const maxRecsToShow = 3;
     recommendations.slice(0, maxRecsToShow).forEach((rec, index) => {
+      // Check if we need a new page for each recommendation
+      yPos = checkForNewPage(yPos, 25);
+      
       doc.setFontSize(9);
       doc.setTextColor(0, 0, 0);
       doc.text(`${index + 1}. [${rec.priority}] ${rec.title}`, 20, yPos);
       
-      // Wrap description text with smaller font
+      // Wrap description text with smaller font and more spacing
       doc.setFontSize(8);
       const description = doc.splitTextToSize(rec.description, pageWidth - 40);
-      doc.text(description, 25, yPos + 4);
+      doc.text(description, 25, yPos + 5);
       
-      yPos += 5 + (description.length * 3);
+      yPos += 8 + (description.length * 4); // Increased spacing between recommendations
     });
     
     // Insights Section - Add detailed insights based on scores
+    yPos = checkForNewPage(yPos, 40);
     doc.setFontSize(12);
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
     doc.text('INSIGHTS & NEXT STEPS', 20, yPos);
@@ -139,34 +144,38 @@ export const generatePDF = (
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(8);
     
-    // Only show insights for low and high score sections
+    // Only show insights for low and high score sections with better spacing
     const criticalSection = scoreResults.sections.find(s => s.riskLevel === 'Critical');
     const bestSection = scoreResults.sections.find(s => s.riskLevel === 'Low');
     
-    yPos += 7;
+    yPos += 10;
     
     if (criticalSection) {
-      const criticalInsight = `Critical Focus Area: ${criticalSection.title} requires immediate attention. Organizations with similar profiles typically see a 30-40% reduction in audit preparation time after addressing this area.`;
+      yPos = checkForNewPage(yPos, 20);
+      const criticalInsight = `Critical Focus Area: ${criticalSection.title} Risk requires immediate attention. Organizations with similar profiles typically see a 30-40% reduction in audit preparation time after addressing this area.`;
       const criticalLines = doc.splitTextToSize(criticalInsight, pageWidth - 40);
       doc.text(criticalLines, 20, yPos);
-      yPos += criticalLines.length * 3 + 2;
+      yPos += criticalLines.length * 4 + 5;
     }
     
     if (bestSection) {
-      const strengthInsight = `Strength: Your ${bestSection.title} practices are strong. Continue to maintain excellence in this area while focusing resources on higher-risk domains.`;
+      yPos = checkForNewPage(yPos, 20);
+      const strengthInsight = `Strength: Your ${bestSection.title} Risk practices are strong. Continue to maintain excellence in this area while focusing resources on higher-risk domains.`;
       const strengthLines = doc.splitTextToSize(strengthInsight, pageWidth - 40);
       doc.text(strengthLines, 20, yPos);
-      yPos += strengthLines.length * 3 + 2;
+      yPos += strengthLines.length * 4 + 5;
     }
     
     // Add industry benchmark if space permits
+    yPos = checkForNewPage(yPos, 20);
     const benchmarkText = `Industry Benchmark: Mid-market companies similar to yours typically achieve a ${scoreResults.overallScore > 50 ? 'lower' : 'higher'} overall score of ${Math.min(85, Math.max(40, scoreResults.overallScore + (scoreResults.overallScore > 50 ? -15 : 15)))}%. The most successful organizations invest in compliance automation to reduce manual efforts by up to 70%.`;
     const benchmarkLines = doc.splitTextToSize(benchmarkText, pageWidth - 40);
     doc.text(benchmarkLines, 20, yPos);
     
-    yPos += benchmarkLines.length * 3 + 5;
+    yPos += benchmarkLines.length * 4 + 8;
     
-    // Business Impact section (2-column layout)
+    // Business Impact section with better spacing
+    yPos = checkForNewPage(yPos, 40);
     doc.setFontSize(12);
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
     doc.text('BUSINESS IMPACT', 20, yPos);
@@ -179,7 +188,7 @@ export const generatePDF = (
       '• Operational inefficiencies'
     ];
     
-    // Create two columns for impact points
+    // Create two columns for impact points with better spacing
     doc.setFontSize(8);
     doc.setTextColor(0, 0, 0);
     
@@ -187,20 +196,21 @@ export const generatePDF = (
     const leftColumn = impactPoints.slice(0, midPoint);
     const rightColumn = impactPoints.slice(midPoint);
     
-    yPos += 7;
+    yPos += 10;
     
     leftColumn.forEach((point, index) => {
-      doc.text(point, 25, yPos + (index * 4));
+      doc.text(point, 25, yPos + (index * 5));
     });
     
     rightColumn.forEach((point, index) => {
-      doc.text(point, pageWidth/2, yPos + (index * 4));
+      doc.text(point, pageWidth/2, yPos + (index * 5));
     });
     
     // Calculate position for CTA
-    yPos = yPos + (Math.max(leftColumn.length, rightColumn.length) * 4) + 8;
+    yPos = yPos + (Math.max(leftColumn.length, rightColumn.length) * 5) + 15;
     
-    // CTA section
+    // CTA section - check for new page first
+    yPos = checkForNewPage(yPos, 30);
     doc.setFillColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
     doc.roundedRect(20, yPos, pageWidth - 40, 25, 3, 3, 'F');
     

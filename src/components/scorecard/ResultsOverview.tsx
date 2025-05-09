@@ -82,7 +82,7 @@ const ResultsOverview: FC<ResultsOverviewProps> = ({
               {scoreResults.sections.map((section) => (
                 <div key={section.id} className="p-4 border border-gray-200 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
-                    <h4 className="font-medium">{section.title}</h4>
+                    <h4 className="font-medium">{section.title} Risk</h4>
                     <span className={`px-2 py-1 rounded-full text-xs text-white ${getRiskLevelColor(section.riskLevel)}`}>
                       {section.riskLevel}
                     </span>
