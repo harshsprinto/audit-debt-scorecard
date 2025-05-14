@@ -1,5 +1,5 @@
 
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { UserInfo } from '@/types/scorecard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,20 +12,78 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface LeadFormProps {
   onSubmit: (userInfo: UserInfo) => void;
 }
 
+// Define team options and their corresponding designations
+const teamOptions = [
+  {
+    value: 'cxo',
+    label: 'CXO Level',
+    designations: ['CEO', 'COO', 'CTO', 'CISO', 'CFO', 'CMO', 'CHRO']
+  },
+  {
+    value: 'compliance',
+    label: 'Compliance and Security',
+    designations: ['Compliance Officer', 'Compliance Manager', 'Risk Manager', 'Security Analyst', 'Security Engineer', 'GRC Specialist', 'Risk and Compliance Lead']
+  },
+  {
+    value: 'product',
+    label: 'Product and Engineering',
+    designations: ['Product Manager', 'Engineering Manager', 'Software Engineer', 'DevOps Engineer', 'QA Engineer', 'Technical Lead']
+  },
+  {
+    value: 'it',
+    label: 'IT and Operations',
+    designations: ['IT Manager', 'System Administrator', 'Network Engineer', 'Operations Manager', 'Support Engineer']
+  },
+  {
+    value: 'sales',
+    label: 'Sales and Marketing',
+    designations: ['Sales Manager', 'Account Executive', 'Business Development Manager', 'Marketing Manager', 'Growth Manager', 'Customer Success Manager']
+  },
+  {
+    value: 'others',
+    label: 'Others',
+    designations: ['Consultant', 'Advisor', 'Partner', 'Analyst', 'Specialist']
+  }
+];
+
 const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState<UserInfo>({
+  const [formData, setFormData] = useState<Omit<UserInfo, 'company'> & { team: string }>({
     fullName: '',
     email: '',
-    company: '',
+    companySize: '',
     designation: '',
-    companySize: ''
+    team: ''
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof UserInfo, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof UserInfo | 'team', string>>>({});
+  const [availableDesignations, setAvailableDesignations] = useState<string[]>([]);
+
+  // Update available designations when team changes
+  useEffect(() => {
+    if (formData.team) {
+      const selectedTeam = teamOptions.find(team => team.value === formData.team);
+      if (selectedTeam) {
+        setAvailableDesignations(selectedTeam.designations);
+        // Reset designation when team changes
+        setFormData(prev => ({ ...prev, designation: '' }));
+      }
+    } else {
+      setAvailableDesignations([]);
+    }
+  }, [formData.team]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,7 +95,7 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
     }
   };
 
-  const handleSelectChange = (value: string, name: keyof UserInfo) => {
+  const handleSelectChange = (value: string, name: keyof UserInfo | 'team') => {
     setFormData(prev => ({ ...prev, [name]: value }));
     
     // Clear error when user selects
@@ -61,7 +119,7 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
     e.preventDefault();
     
     // Validate form
-    const newErrors: Partial<Record<keyof UserInfo, string>> = {};
+    const newErrors: Partial<Record<keyof UserInfo | 'team', string>> = {};
     
     if (!formData.fullName.trim()) {
       newErrors.fullName = 'Full name is required';
@@ -73,15 +131,15 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
       newErrors.email = 'Please use your work email';
     }
     
-    if (!formData.company.trim()) {
-      newErrors.company = 'Company name is required';
-    }
-    
     if (!formData.companySize) {
       newErrors.companySize = 'Company size is required';
     }
     
-    if (!formData.designation.trim()) {
+    if (!formData.team) {
+      newErrors.team = 'Team is required';
+    }
+    
+    if (!formData.designation) {
       newErrors.designation = 'Designation is required';
     }
     
@@ -90,7 +148,16 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
       return;
     }
     
-    onSubmit(formData);
+    // Submit without the team field and add empty company field to match expected UserInfo type
+    const userInfo: UserInfo = {
+      fullName: formData.fullName,
+      email: formData.email,
+      company: '', // Providing empty string to match the expected UserInfo type
+      companySize: formData.companySize,
+      designation: formData.designation,
+    };
+    
+    onSubmit(userInfo);
   };
 
   return (
@@ -132,19 +199,6 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="company">Company Name *</Label>
-            <Input
-              id="company"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              className={errors.company ? 'border-red-500' : ''}
-              required
-            />
-            {errors.company && <p className="text-xs text-red-500">{errors.company}</p>}
-          </div>
-          
-          <div className="space-y-2">
             <Label htmlFor="companySize">Company Size *</Label>
             <Select 
               onValueChange={(value) => handleSelectChange(value, 'companySize')}
@@ -167,16 +221,44 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
             {errors.companySize && <p className="text-xs text-red-500">{errors.companySize}</p>}
           </div>
           
+          {/* Team Selection Dropdown */}
+          <div className="space-y-2">
+            <Label htmlFor="team">Team *</Label>
+            <Select
+              onValueChange={(value) => handleSelectChange(value, 'team')}
+              value={formData.team}
+              required
+            >
+              <SelectTrigger className={errors.team ? 'border-red-500' : ''}>
+                <SelectValue placeholder="Select your team" />
+              </SelectTrigger>
+              <SelectContent>
+                {teamOptions.map((team) => (
+                  <SelectItem key={team.value} value={team.value}>{team.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.team && <p className="text-xs text-red-500">{errors.team}</p>}
+          </div>
+          
+          {/* Designation Dropdown (conditional on team selection) */}
           <div className="space-y-2">
             <Label htmlFor="designation">Designation/Title *</Label>
-            <Input
-              id="designation"
-              name="designation"
+            <Select
+              onValueChange={(value) => handleSelectChange(value, 'designation')}
               value={formData.designation}
-              onChange={handleChange}
-              className={errors.designation ? 'border-red-500' : ''}
+              disabled={!formData.team}
               required
-            />
+            >
+              <SelectTrigger className={errors.designation ? 'border-red-500' : ''}>
+                <SelectValue placeholder={formData.team ? "Select your designation" : "First select a team"} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableDesignations.map((designation) => (
+                  <SelectItem key={designation} value={designation}>{designation}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.designation && <p className="text-xs text-red-500">{errors.designation}</p>}
           </div>
           

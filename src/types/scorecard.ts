@@ -18,7 +18,7 @@ export interface AuditDebtScore {
 export interface UserInfo {
   fullName: string;
   email: string;
-  company: string;
+  company: string; // Kept for backward compatibility
   designation: string;
   companySize?: string;
 }
