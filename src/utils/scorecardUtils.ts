@@ -28,16 +28,16 @@ export const calculateScore = (formData: FormData): AuditDebtScore => {
     (changeManagementScore.score / changeManagementScore.maxScore) * sectionWeights.changeManagement
   );
 
-  // Determine overall risk level
+  // Determine overall debt level
   let overallRiskLevel: RiskLevel;
   if (overallScore >= 75) {
-    overallRiskLevel = 'Low';
+    overallRiskLevel = 'Minimal';
   } else if (overallScore >= 50) {
     overallRiskLevel = 'Moderate';
   } else if (overallScore >= 25) {
-    overallRiskLevel = 'High';
+    overallRiskLevel = 'Significant';
   } else {
-    overallRiskLevel = 'Critical';
+    overallRiskLevel = 'High';
   }
 
   return {
@@ -83,13 +83,13 @@ const determineRiskLevel = (score: number, maxScore: number): RiskLevel => {
   const percentage = (score / maxScore) * 100;
   
   if (percentage >= 75) {
-    return 'Low';
+    return 'Minimal';
   } else if (percentage >= 50) {
     return 'Moderate';
   } else if (percentage >= 25) {
-    return 'High';
+    return 'Significant';
   } else {
-    return 'Critical';
+    return 'High';
   }
 };
 
@@ -494,9 +494,9 @@ const calculateChangeManagementScore = (section: Record<string, any>) => {
 export const generateRecommendations = (scoreResults: AuditDebtScore): RecommendationItem[] => {
   const recommendations: RecommendationItem[] = [];
 
-  // Get low-scoring sections (with Risk Level of High or Critical)
+  // Get sections with significant or high audit debt
   const lowScoringSections = scoreResults.sections.filter(
-    section => section.riskLevel === 'High' || section.riskLevel === 'Critical'
+    section => section.riskLevel === 'High' || section.riskLevel === 'Significant'
   );
 
   // Add section-specific recommendations
@@ -504,25 +504,25 @@ export const generateRecommendations = (scoreResults: AuditDebtScore): Recommend
     switch (section.id) {
       case 'complianceMaturity':
         recommendations.push({
-          title: 'Establish a Formal Compliance Program',
-          description: 'Designate a compliance owner, develop a structured approach to compliance certifications, and implement regular training cycles.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          title: 'Implement a Centralized Compliance Platform',
+          description: 'Designate a compliance owner, develop a structured approach to compliance certifications, and implement regular training cycles to reduce Maturity Debt.',
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         recommendations.push({
-          title: 'Document and Standardize Security Policies',
+          title: 'Streamline Compliance Workflows with Clear Ownership',
           description: 'Create or update security policies with regular review cycles and establish employee training programs that reflect current compliance requirements.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         break;
       
       case 'toolingAutomation':
         recommendations.push({
-          title: 'Implement a Compliance Management Platform',
+          title: 'Implement a Centralized Compliance Platform to Reduce Manual Audit Debt',
           description: 'Replace manual processes and spreadsheets with a dedicated compliance automation solution that centralizes evidence collection across frameworks.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         recommendations.push({
-          title: 'Automate Evidence Collection and Compliance Monitoring',
+          title: 'Automate Evidence Collection to Cut Down Operational Audit Debt',
           description: 'Reduce manual effort and human error by implementing automated evidence collection and real-time alerts for control failures or compliance gaps.',
           priority: 'Medium'
         });
@@ -530,14 +530,14 @@ export const generateRecommendations = (scoreResults: AuditDebtScore): Recommend
       
       case 'securityOperations':
         recommendations.push({
-          title: 'Establish Regular Control Reviews and Testing',
+          title: 'Establish Regular Control Reviews to Reduce Controls Debt',
           description: 'Implement automated access reviews and continuous control monitoring with comprehensive documentation of controls that is regularly updated.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         recommendations.push({
-          title: 'Create and Test Incident Response Procedures',
+          title: 'Eliminate Redundant Efforts in Security Operations',
           description: 'Develop detailed incident response documentation and conduct regular tabletop exercises to ensure effectiveness of your security operations.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         break;
       
@@ -545,10 +545,10 @@ export const generateRecommendations = (scoreResults: AuditDebtScore): Recommend
         recommendations.push({
           title: 'Develop a Comprehensive Audit Readiness Program',
           description: 'Create a structured approach to prepare for audits more efficiently with regular risk assessments and streamlined evidence retrieval.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         recommendations.push({
-          title: 'Implement Risk-based Control Monitoring',
+          title: 'Streamline Compliance Workflows for Audit Efficiency',
           description: 'Map business risks to specific controls, establish a maintained risk register, and develop processes to identify and evaluate emerging risks.',
           priority: 'Medium'
         });
@@ -558,21 +558,21 @@ export const generateRecommendations = (scoreResults: AuditDebtScore): Recommend
         recommendations.push({
           title: 'Establish Formal Change Management Processes',
           description: 'Implement structured approval workflows for infrastructure and IT changes with clear risk tracking protocols and cross-team communication.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         recommendations.push({
-          title: 'Enhance Vendor Risk Management',
+          title: 'Automate Evidence Collection for Vendor Risk Management',
           description: 'Develop comprehensive vendor assessment procedures, implement ongoing monitoring, and regularly review contracts for compliance requirements.',
-          priority: section.riskLevel === 'Critical' ? 'High' : 'Medium'
+          priority: section.riskLevel === 'High' ? 'High' : 'Medium'
         });
         break;
     }
   });
 
   // Add general recommendations if needed
-  if (scoreResults.overallRiskLevel === 'High' || scoreResults.overallRiskLevel === 'Critical') {
+  if (scoreResults.overallRiskLevel === 'High' || scoreResults.overallRiskLevel === 'Significant') {
     recommendations.push({
-      title: 'Conduct a Comprehensive Compliance Gap Assessment',
+      title: 'Eliminate Redundant Efforts with a Comprehensive Gap Assessment',
       description: 'Perform a thorough review of your compliance program to identify all gaps and develop a remediation plan with clear ownership and timelines.',
       priority: 'High'
     });
@@ -587,7 +587,7 @@ export const generateRecommendations = (scoreResults: AuditDebtScore): Recommend
     });
     
     recommendations.push({
-      title: 'Enhance Security Questionnaire Management',
+      title: 'Automate Evidence Collection for Security Questionnaires',
       description: 'Implement a standardized process for managing incoming security questionnaires, ensuring accurate responses, and tracking completion.',
       priority: 'Low'
     });
@@ -617,6 +617,10 @@ export const generateBookingUrl = (formData: FormData, score: number) => {
     source: 'audit_debt_scorecard',
     score: score.toString()
   });
+  
+  if (formData.companySize) {
+    queryParams.append('company_size', formData.companySize);
+  }
 
   return `${baseUrl}?${queryParams.toString()}`;
 };

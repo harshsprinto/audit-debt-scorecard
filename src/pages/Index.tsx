@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import LeadForm from '@/components/scorecard/LeadForm';
@@ -6,10 +7,11 @@ import ResultsOverview from '@/components/scorecard/ResultsOverview';
 import Recommendations from '@/components/scorecard/Recommendations';
 import BookConsultationModal from '@/components/scorecard/BookConsultationModal';
 import ThankYou from '@/components/scorecard/ThankYou';
-import { scorecardSections, Question } from '@/data/questions';
+import { scorecardSections } from '@/data/questions';
 import { FormData, UserInfo, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
 import { calculateScore, generateRecommendations } from '@/utils/scorecardUtils';
 import { downloadPDF } from '@/utils/pdfGenerator';
+import { toast } from 'sonner';
 
 // Define the steps of the scorecard flow
 enum Step {
@@ -33,6 +35,7 @@ const Index = () => {
     email: '',
     company: '',
     designation: '',
+    companySize: '',
     sections: {
       complianceMaturity: {},
       toolingAutomation: {},
@@ -118,7 +121,7 @@ const Index = () => {
             title: 'Tooling & Automation',
             score: 6,
             maxScore: 15,
-            riskLevel: 'High'
+            riskLevel: 'Significant'
           },
           {
             id: 'securityOperations',
@@ -145,12 +148,12 @@ const Index = () => {
       });
       setRecommendations([
         {
-          title: 'Implement a Compliance Management Platform',
+          title: 'Implement a Centralized Compliance Platform to Reduce Manual Audit Debt',
           description: 'Replace manual processes and spreadsheets with a dedicated compliance automation solution.',
           priority: 'High'
         },
         {
-          title: 'Automate Evidence Collection',
+          title: 'Automate Evidence Collection to Cut Down Operational Audit Debt',
           description: 'Reduce manual effort and human error by automating the collection of compliance evidence.',
           priority: 'Medium'
         },
@@ -202,6 +205,30 @@ const Index = () => {
   const handleDownloadPDF = () => {
     if (scoreResults && formData) {
       downloadPDF(formData, scoreResults, recommendations);
+    }
+  };
+
+  // Handle sharing
+  const handleShare = (method: string) => {
+    switch (method) {
+      case 'email':
+        window.open(`mailto:?subject=Audit Debt Report for ${formData.company}&body=I'd like to share my company's Audit Debt Report with you.`);
+        toast.success("Email client opened");
+        break;
+      case 'linkedin':
+        window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href));
+        toast.success("Opening LinkedIn sharing");
+        break;
+      case 'slack':
+        // This would normally open a Slack sharing dialog or integration
+        toast.info("Slack sharing would be integrated here");
+        break;
+      case 'link':
+        navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!");
+        break;
+      default:
+        console.log(`Sharing via ${method} not implemented yet`);
     }
   };
 
@@ -288,7 +315,8 @@ actionable steps to resolve it</p>
                 userInfo={formData} 
                 scoreResults={scoreResults} 
                 onContactClick={handleContactClick} 
-                onDownloadClick={handleDownloadPDF} 
+                onDownloadClick={handleDownloadPDF}
+                onShareClick={handleShare}
               />
               
               <Recommendations recommendations={recommendations} />

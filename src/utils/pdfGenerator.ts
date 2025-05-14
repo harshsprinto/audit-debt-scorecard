@@ -1,3 +1,4 @@
+
 import { FormData, AuditDebtScore, RecommendationItem } from '@/types/scorecard';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -72,8 +73,13 @@ export const generatePDF = (
     // Place email on the right side with proper spacing
     doc.text(`Email: ${userInfo.email}`, pageWidth/2, headerY + 35);
     
+    // Add company size if available
+    if (userInfo.companySize) {
+      doc.text(`Company Size: ${userInfo.companySize}`, 20, headerY + 45);
+    }
+    
     // Adjust y position based on height of contact info
-    let yPos = headerY + 45;
+    let yPos = headerY + (userInfo.companySize ? 55 : 45);
     
     // Audit Assessment Results section - more compact but with better spacing
     doc.setFontSize(12);
@@ -82,18 +88,18 @@ export const generatePDF = (
     
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
-    doc.text(`Overall Risk Level: ${scoreResults.overallRiskLevel} (${scoreResults.overallScore}%)`, 20, yPos + 10);
+    doc.text(`Overall Audit Debt Level: ${scoreResults.overallRiskLevel} (${scoreResults.overallScore}%)`, 20, yPos + 10);
     
-    // Create section data for the table with "Risk" appended to section titles
+    // Create section data for the table with "Audit Debt" appended to section titles
     const sectionData = scoreResults.sections.map(section => [
-      `${section.title} Risk`, 
+      `${section.title} Audit Debt`, 
       section.riskLevel, 
       `${Math.round((section.score / section.maxScore) * 100)}%`
     ]);
     
     // Compact table for results with better spacing
     autoTable(doc, {
-      head: [['Section', 'Risk Level', 'Score']],
+      head: [['Section', 'Debt Level', 'Score']],
       body: sectionData,
       startY: yPos + 15,
       theme: 'striped',
@@ -113,15 +119,14 @@ export const generatePDF = (
     yPos = checkForNewPage(yPos, 60);
     doc.setFontSize(12);
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
-    doc.text('KEY RECOMMENDATIONS', 20, yPos);
+    doc.text('KEY RECOMMENDATIONS TO REDUCE AUDIT DEBT', 20, yPos);
     
     yPos += 10;
     
     // Show recommendations with more space between items
-    const maxRecsToShow = 3;
-    recommendations.slice(0, maxRecsToShow).forEach((rec, index) => {
+    recommendations.slice(0, 3).forEach((rec, index) => {
       // Check if we need a new page for each recommendation
-      yPos = checkForNewPage(yPos, 25);
+      yPos = checkForNewPage(yPos, 30); // Increased needed space
       
       doc.setFontSize(9);
       doc.setTextColor(0, 0, 0);
@@ -132,11 +137,11 @@ export const generatePDF = (
       const description = doc.splitTextToSize(rec.description, pageWidth - 40);
       doc.text(description, 25, yPos + 5);
       
-      yPos += 8 + (description.length * 4); // Increased spacing between recommendations
+      yPos += 10 + (description.length * 4); // Increased spacing between recommendations
     });
     
     // Insights Section - Add detailed insights based on scores
-    yPos = checkForNewPage(yPos, 40);
+    yPos = checkForNewPage(yPos, 50);
     doc.setFontSize(12);
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
     doc.text('INSIGHTS & NEXT STEPS', 20, yPos);
@@ -144,41 +149,47 @@ export const generatePDF = (
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(8);
     
-    // Only show insights for low and high score sections with better spacing
-    const criticalSection = scoreResults.sections.find(s => s.riskLevel === 'Critical');
-    const bestSection = scoreResults.sections.find(s => s.riskLevel === 'Low');
-    
     yPos += 10;
     
+    // New content for What This Means for Your Business
+    const businessImpactText = "Your organization has identified areas of audit debt that, if unaddressed, could lead to operational inefficiencies, compliance issues, and potential revenue loss. Taking proactive measures now can mitigate risks, secure deals, and improve compliance posture.";
+    const businessImpactLines = doc.splitTextToSize(businessImpactText, pageWidth - 40);
+    doc.text(businessImpactLines, 20, yPos);
+    yPos += businessImpactLines.length * 4 + 8;
+    
+    // Only show insights for problem areas and strengths with better spacing
+    const criticalSection = scoreResults.sections.find(s => s.riskLevel === 'High' || s.riskLevel === 'Significant');
+    const bestSection = scoreResults.sections.find(s => s.riskLevel === 'Minimal');
+    
     if (criticalSection) {
-      yPos = checkForNewPage(yPos, 20);
-      const criticalInsight = `Critical Focus Area: ${criticalSection.title} Risk requires immediate attention. Organizations with similar profiles typically see a 30-40% reduction in audit preparation time after addressing this area.`;
+      yPos = checkForNewPage(yPos, 25);
+      const criticalInsight = `Focus Area: ${criticalSection.title} Audit Debt requires immediate attention. Organizations with similar profiles typically see a 30-40% reduction in audit preparation time after addressing this area.`;
       const criticalLines = doc.splitTextToSize(criticalInsight, pageWidth - 40);
       doc.text(criticalLines, 20, yPos);
-      yPos += criticalLines.length * 4 + 5;
+      yPos += criticalLines.length * 4 + 8;
     }
     
     if (bestSection) {
-      yPos = checkForNewPage(yPos, 20);
-      const strengthInsight = `Strength: Your ${bestSection.title} Risk practices are strong. Continue to maintain excellence in this area while focusing resources on higher-risk domains.`;
+      yPos = checkForNewPage(yPos, 25);
+      const strengthInsight = `Strength: Your ${bestSection.title} Audit Debt is minimal. Continue to maintain excellence in this area while focusing resources on higher-debt domains.`;
       const strengthLines = doc.splitTextToSize(strengthInsight, pageWidth - 40);
       doc.text(strengthLines, 20, yPos);
-      yPos += strengthLines.length * 4 + 5;
+      yPos += strengthLines.length * 4 + 8;
     }
     
-    // Add industry benchmark if space permits
-    yPos = checkForNewPage(yPos, 20);
+    // Add industry benchmark with proper spacing
+    yPos = checkForNewPage(yPos, 25);
     const benchmarkText = `Industry Benchmark: Mid-market companies similar to yours typically achieve a ${scoreResults.overallScore > 50 ? 'lower' : 'higher'} overall score of ${Math.min(85, Math.max(40, scoreResults.overallScore + (scoreResults.overallScore > 50 ? -15 : 15)))}%. The most successful organizations invest in compliance automation to reduce manual efforts by up to 70%.`;
     const benchmarkLines = doc.splitTextToSize(benchmarkText, pageWidth - 40);
     doc.text(benchmarkLines, 20, yPos);
     
-    yPos += benchmarkLines.length * 4 + 8;
+    yPos += benchmarkLines.length * 4 + 10;
     
     // Business Impact section with better spacing
-    yPos = checkForNewPage(yPos, 40);
+    yPos = checkForNewPage(yPos, 50);
     doc.setFontSize(12);
     doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
-    doc.text('BUSINESS IMPACT', 20, yPos);
+    doc.text('BUSINESS IMPACT OF AUDIT DEBT', 20, yPos);
     
     const impactPoints = [
       '• Failed compliance audits',
@@ -192,37 +203,30 @@ export const generatePDF = (
     doc.setFontSize(8);
     doc.setTextColor(0, 0, 0);
     
-    const midPoint = Math.ceil(impactPoints.length / 2);
-    const leftColumn = impactPoints.slice(0, midPoint);
-    const rightColumn = impactPoints.slice(midPoint);
-    
     yPos += 10;
     
-    leftColumn.forEach((point, index) => {
-      doc.text(point, 25, yPos + (index * 5));
-    });
-    
-    rightColumn.forEach((point, index) => {
-      doc.text(point, pageWidth/2, yPos + (index * 5));
+    // Spaced out impact points in one column
+    impactPoints.forEach((point, index) => {
+      doc.text(point, 25, yPos + (index * 6));
     });
     
     // Calculate position for CTA
-    yPos = yPos + (Math.max(leftColumn.length, rightColumn.length) * 5) + 15;
+    yPos = yPos + (impactPoints.length * 6) + 15;
     
     // CTA section - check for new page first
-    yPos = checkForNewPage(yPos, 30);
+    yPos = checkForNewPage(yPos, 35);
     doc.setFillColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
-    doc.roundedRect(20, yPos, pageWidth - 40, 25, 3, 3, 'F');
+    doc.roundedRect(20, yPos, pageWidth - 40, 30, 3, 3, 'F');
     
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(12);
-    doc.text('TAKE ACTION NOW', pageWidth / 2, yPos + 10, { align: 'center' });
+    doc.text('TAKE CONTROL OF YOUR AUDIT DEBT', pageWidth / 2, yPos + 12, { align: 'center' });
     
     doc.setFontSize(9);
-    doc.text('Schedule a demo to eliminate audit debt for your business', pageWidth / 2, yPos + 17, { align: 'center' });
+    doc.text('Schedule a demo to eliminate audit debt for your business', pageWidth / 2, yPos + 20, { align: 'center' });
     
     doc.setFontSize(10);
-    doc.text('sales@sprinto.com', pageWidth / 2, yPos + 24, { align: 'center' });
+    doc.text('sales@sprinto.com', pageWidth / 2, yPos + 28, { align: 'center' });
     
     // Footer
     doc.setFontSize(7);

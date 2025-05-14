@@ -1,5 +1,5 @@
 
-export type RiskLevel = 'Low' | 'Moderate' | 'High' | 'Critical';
+export type RiskLevel = 'Minimal' | 'Moderate' | 'Significant' | 'High';
 
 export interface SectionScore {
   id: string;
@@ -20,6 +20,7 @@ export interface UserInfo {
   email: string;
   company: string;
   designation: string;
+  companySize?: string;
 }
 
 export interface FormData extends UserInfo {

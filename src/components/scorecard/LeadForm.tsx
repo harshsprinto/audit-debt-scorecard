@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface LeadFormProps {
   onSubmit: (userInfo: UserInfo) => void;
@@ -15,7 +22,8 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
     fullName: '',
     email: '',
     company: '',
-    designation: ''
+    designation: '',
+    companySize: ''
   });
   const [errors, setErrors] = useState<Partial<Record<keyof UserInfo, string>>>({});
 
@@ -25,6 +33,15 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
     
     // Clear error when user types
     if (errors[name as keyof UserInfo]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleSelectChange = (value: string, name: keyof UserInfo) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user selects
+    if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
@@ -58,6 +75,10 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
     
     if (!formData.company.trim()) {
       newErrors.company = 'Company name is required';
+    }
+    
+    if (!formData.companySize) {
+      newErrors.companySize = 'Company size is required';
     }
     
     if (!formData.designation.trim()) {
@@ -118,6 +139,28 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
               className={errors.company ? 'border-red-500' : ''}
             />
             {errors.company && <p className="text-xs text-red-500">{errors.company}</p>}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="companySize">Company Size</Label>
+            <Select 
+              onValueChange={(value) => handleSelectChange(value, 'companySize')}
+              value={formData.companySize}
+            >
+              <SelectTrigger className={errors.companySize ? 'border-red-500' : ''}>
+                <SelectValue placeholder="Select company size" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1-25">1-25 employees</SelectItem>
+                <SelectItem value="26-100">26-100 employees</SelectItem>
+                <SelectItem value="101-250">101-250 employees</SelectItem>
+                <SelectItem value="251-500">251-500 employees</SelectItem>
+                <SelectItem value="501-2000">501-2000 employees</SelectItem>
+                <SelectItem value="2001-5000">2001-5000 employees</SelectItem>
+                <SelectItem value="5001+">5001+ employees</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.companySize && <p className="text-xs text-red-500">{errors.companySize}</p>}
           </div>
           
           <div className="space-y-2">

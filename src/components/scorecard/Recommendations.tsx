@@ -1,7 +1,7 @@
 
 import { FC } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BadgeCheck, AlertTriangle, Clock } from 'lucide-react';
+import { BadgeCheck, AlertTriangle, Clock, Settings, Database, Trash2, TrendingUp } from 'lucide-react';
 import { RecommendationItem } from '@/types/scorecard';
 
 interface RecommendationsProps {
@@ -35,10 +35,24 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
     }
   };
 
+  const getRecommendationIcon = (title: string) => {
+    if (title.toLowerCase().includes('centralized') || title.toLowerCase().includes('platform')) {
+      return <Settings className="h-6 w-6 text-blue-500" />;
+    } else if (title.toLowerCase().includes('automate') || title.toLowerCase().includes('evidence')) {
+      return <Database className="h-6 w-6 text-purple-500" />;
+    } else if (title.toLowerCase().includes('eliminate') || title.toLowerCase().includes('redundant')) {
+      return <Trash2 className="h-6 w-6 text-orange-500" />;
+    } else if (title.toLowerCase().includes('streamline') || title.toLowerCase().includes('workflow')) {
+      return <TrendingUp className="h-6 w-6 text-green-500" />;
+    } else {
+      return <Settings className="h-6 w-6 text-blue-500" />;
+    }
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto mt-8">
       <CardHeader>
-        <CardTitle className="text-xl">Recommended Actions</CardTitle>
+        <CardTitle className="text-xl">Recommended Actions to Reduce Audit Debt</CardTitle>
       </CardHeader>
       
       <CardContent>
@@ -49,8 +63,11 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
               className={`p-4 rounded-lg border ${getPriorityColor(item.priority)}`}
             >
               <div className="flex items-start gap-3">
-                <div className="mt-1">
-                  {getPriorityIcon(item.priority)}
+                <div className="mt-1 flex flex-col items-center">
+                  {getRecommendationIcon(item.title)}
+                  <div className="mt-2">
+                    {getPriorityIcon(item.priority)}
+                  </div>
                 </div>
                 
                 <div>
@@ -75,18 +92,35 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
         </div>
         
         <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <h3 className="font-medium text-gray-800 mb-2">How Sprinto Can Help</h3>
+          <h3 className="font-medium text-gray-800 mb-2">How Sprinto Eliminates Audit Debt:</h3>
           
-          <p className="text-gray-600 mb-3">
-            Sprinto is a compliance automation platform that helps organizations eliminate audit debt through:
-          </p>
-          
-          <ul className="list-disc pl-5 space-y-1 text-gray-600">
-            <li>Centralizing evidence collection and automating compliance workflows</li>
-            <li>Continuously monitoring controls to prevent compliance drift</li>
-            <li>Simplifying policy management and documentation</li>
-            <li>Providing expert guidance throughout the compliance journey</li>
+          <ul className="space-y-3 text-gray-600">
+            <li className="flex items-center">
+              <Database className="h-5 w-5 text-blue-500 mr-3" />
+              <span>Automates evidence collection to reduce compliance effort by up to 90%</span>
+            </li>
+            <li className="flex items-center">
+              <Settings className="h-5 w-5 text-blue-500 mr-3" />
+              <span>Centralizes compliance tasks, reducing oversight gaps</span>
+            </li>
+            <li className="flex items-center">
+              <TrendingUp className="h-5 w-5 text-blue-500 mr-3" />
+              <span>Monitors compliance continuously, preventing policy drift</span>
+            </li>
+            <li className="flex items-center">
+              <Trash2 className="h-5 w-5 text-blue-500 mr-3" />
+              <span>Eliminates redundant efforts and streamlines compliance workflows</span>
+            </li>
           </ul>
+          
+          <div className="mt-6">
+            <button
+              onClick={() => window.open('https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard', '_blank')}
+              className="w-full py-2 bg-sprinto-orange hover:bg-opacity-90 text-white rounded-md transition-colors duration-200"
+            >
+              Take Control of Your Audit Debt: Book a Demo with Us Now
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>
