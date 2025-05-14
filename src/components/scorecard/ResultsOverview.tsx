@@ -1,8 +1,7 @@
-
 import { FC } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Share2 } from 'lucide-react';
+import { Download, Mail, Linkedin, Slack } from 'lucide-react';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -58,23 +57,26 @@ const ResultsOverview: FC<ResultsOverviewProps> = ({
     }
   };
 
-  // Handle sharing through different channels
+  // Handle sharing through different channels - now directly shares the PDF
   const handleShare = (method: string) => {
+    // First generate the PDF, then share it
     if (onShareClick) {
       onShareClick(method);
     } else {
-      console.log(`Sharing via ${method}`);
-      // Fallback implementation if onShareClick not provided
+      // Generate and share the PDF
+      onDownloadClick(); // Generate the PDF first
+      
+      console.log(`Sharing PDF via ${method}`);
       if (method === 'email') {
+        // Open email client with the PDF report as the subject
         window.open(`mailto:?subject=Audit Debt Report for ${userInfo.company}&body=Please find attached the Audit Debt Report for ${userInfo.company}.`);
       } else if (method === 'linkedin') {
-        window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href));
+        // For LinkedIn, we'll still need to use the URL, but we can show a message that the PDF needs to be attached manually
+        alert('LinkedIn sharing: Please attach the downloaded PDF to your LinkedIn post for sharing.');
+        window.open('https://www.linkedin.com/sharing/share-offsite/');
       } else if (method === 'slack') {
-        // This would normally open a Slack sharing dialog or integration
-        alert('Slack sharing would be integrated here');
-      } else if (method === 'link') {
-        navigator.clipboard.writeText(window.location.href);
-        alert('Link copied to clipboard!');
+        // For Slack, show guidance on how to share the PDF
+        alert('Slack sharing: Please upload the downloaded PDF to your Slack conversation.');
       }
     }
   };
@@ -201,26 +203,22 @@ const ResultsOverview: FC<ResultsOverviewProps> = ({
                   Download or Share PDF
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="bg-white">
                 <DropdownMenuItem onClick={() => onDownloadClick()}>
                   <Download className="mr-2 h-4 w-4" />
                   Download PDF
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleShare('email')}>
-                  <Share2 className="mr-2 h-4 w-4" />
+                  <Mail className="mr-2 h-4 w-4" />
                   Share via Email
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleShare('linkedin')}>
-                  <Share2 className="mr-2 h-4 w-4" />
+                  <Linkedin className="mr-2 h-4 w-4" />
                   Share via LinkedIn
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleShare('slack')}>
-                  <Share2 className="mr-2 h-4 w-4" />
+                  <Slack className="mr-2 h-4 w-4" />
                   Share via Slack
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleShare('link')}>
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Copy Link
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
