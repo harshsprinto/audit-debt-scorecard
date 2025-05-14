@@ -104,19 +104,20 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
+            <Label htmlFor="fullName">Full Name *</Label>
             <Input
               id="fullName"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
               className={errors.fullName ? 'border-red-500' : ''}
+              required
             />
             {errors.fullName && <p className="text-xs text-red-500">{errors.fullName}</p>}
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="email">Work Email</Label>
+            <Label htmlFor="email">Work Email *</Label>
             <Input
               id="email"
               name="email"
@@ -124,28 +125,31 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
               value={formData.email}
               onChange={handleChange}
               className={errors.email ? 'border-red-500' : ''}
+              required
             />
             {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
             <p className="text-xs text-gray-500">We'll send your personalized report to this email</p>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="company">Company Name</Label>
+            <Label htmlFor="company">Company Name *</Label>
             <Input
               id="company"
               name="company"
               value={formData.company}
               onChange={handleChange}
               className={errors.company ? 'border-red-500' : ''}
+              required
             />
             {errors.company && <p className="text-xs text-red-500">{errors.company}</p>}
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="companySize">Company Size</Label>
+            <Label htmlFor="companySize">Company Size *</Label>
             <Select 
               onValueChange={(value) => handleSelectChange(value, 'companySize')}
               value={formData.companySize}
+              required
             >
               <SelectTrigger className={errors.companySize ? 'border-red-500' : ''}>
                 <SelectValue placeholder="Select company size" />
@@ -164,13 +168,14 @@ const LeadForm: FC<LeadFormProps> = ({ onSubmit }) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="designation">Designation/Title</Label>
+            <Label htmlFor="designation">Designation/Title *</Label>
             <Input
               id="designation"
               name="designation"
               value={formData.designation}
               onChange={handleChange}
               className={errors.designation ? 'border-red-500' : ''}
+              required
             />
             {errors.designation && <p className="text-xs text-red-500">{errors.designation}</p>}
           </div>
