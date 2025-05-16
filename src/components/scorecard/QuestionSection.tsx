@@ -9,6 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Question } from '@/data/questions';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { Progress } from '@/components/ui/progress';
 
 interface QuestionSectionProps {
   sectionId: string;
@@ -144,12 +145,11 @@ const QuestionSection: FC<QuestionSectionProps> = ({
     <TooltipProvider>
       <div className="w-full max-w-3xl mx-auto">
         <div className="mb-4">
-          <div className="h-2 w-full bg-gray-200 rounded-full">
-            <div 
-              className="h-2 rounded-full bg-sprinto-orange" 
-              style={{ width: `${progress}%` }}
-            />
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-500">Progress</span>
+            <span className="text-sm font-medium">{progress}% completed</span>
           </div>
+          <Progress value={progress} className="h-2 w-full bg-gray-200" />
         </div>
         
         <Card>
