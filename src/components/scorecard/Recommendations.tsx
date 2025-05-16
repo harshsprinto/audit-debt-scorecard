@@ -47,7 +47,7 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
   };
 
   return (
-    <Card className="mt-8 border-t-4 border-sprinto-blue">
+    <Card className="mt-8 border-t-4 border-sprinto-blue max-w-3xl mx-auto">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl flex items-center justify-between">
           Recommended Actions to Reduce Audit Debt
@@ -115,6 +115,26 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
             </p>
           </CollapsibleContent>
         </Collapsible>
+        
+        {/* How Sprinto can help section - restored */}
+        <div className="mt-8 border-t border-gray-200 pt-6">
+          <h3 className="text-lg font-medium mb-4">How Sprinto Can Help</h3>
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+            <p className="text-gray-700">
+              Sprinto's compliance automation platform helps teams like yours eliminate audit debt by:
+            </p>
+            <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-5">
+              <li>Centralizing evidence collection and compliance workflows</li>
+              <li>Automating controls monitoring and evidence gathering</li>
+              <li>Providing real-time visibility into compliance status</li>
+              <li>Streamlining audit preparation with purpose-built tools</li>
+              <li>Offering expert guidance throughout your compliance journey</li>
+            </ul>
+            <p className="mt-4 text-gray-700">
+              Schedule a personalized demo to see how Sprinto can help your organization reduce audit debt and achieve compliance with less effort.
+            </p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
