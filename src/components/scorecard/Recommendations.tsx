@@ -47,77 +47,92 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
   };
 
   return (
-    <Card className="mt-8 border-t-4 border-sprinto-blue max-w-3xl mx-auto">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl flex items-center justify-between">
-          Recommended Actions to Reduce Audit Debt
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? "Collapse" : "Expand"} All
-            <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent>
-        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
-          {/* Preview - always visible */}
-          <div 
-            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer" 
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <div className="flex items-center">
-              <div className="mr-4 text-blue-500">
-                {recommendations[0] && getRecommendationIcon(recommendations[0].title)}
-              </div>
-              <div>
-                <h3 className="font-medium">{recommendations[0]?.title || "Implement a Centralized Compliance Platform"}</h3>
-                <p className="text-sm text-gray-500">Click to {isOpen ? "collapse" : "expand"} all recommendations</p>
-              </div>
-            </div>
-            <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
-          </div>
-
-          {/* Expanded content */}
-          <CollapsibleContent className="space-y-4 pt-2">
-            {recommendations.map((recommendation, index) => (
-              <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white">
+    <div className="mt-8 max-w-3xl mx-auto">
+      {/* Recommendations Section */}
+      <Card className="border-t-4 border-sprinto-blue">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xl flex items-center justify-between">
+            Recommended Actions to Reduce Audit Debt
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? "Collapse" : "Expand"} All
+              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent>
+          <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
+            {/* First recommendation - always visible */}
+            {recommendations.length > 0 && (
+              <div className="p-4 border border-gray-200 rounded-lg bg-white">
                 <div className="flex">
                   <div className="mr-4 mt-1">
-                    {getRecommendationIcon(recommendation.title)}
+                    {getRecommendationIcon(recommendations[0].title)}
                   </div>
                   
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-medium">{recommendation.title}</h3>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(recommendation.priority)}`}>
-                        {recommendation.priority} Priority
+                      <h3 className="text-lg font-medium">{recommendations[0].title}</h3>
+                      <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(recommendations[0].priority)}`}>
+                        {recommendations[0].priority} Priority
                       </span>
                     </div>
                     
-                    <p className="text-gray-700">{recommendation.description}</p>
+                    <p className="text-gray-700">{recommendations[0].description}</p>
                     
                     <div className="mt-4 flex items-center text-xs text-gray-500">
                       <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                      Estimated time to implement: {(index % 3 === 0) ? '2-4 weeks' : (index % 3 === 1) ? '1-2 weeks' : '3-6 weeks'}
+                      Estimated time to implement: 2-4 weeks
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
+            )}
 
-            <p className="text-sm text-gray-500 italic mt-2">
-              These recommendations are based on your audit debt assessment. Implementing them will help reduce your overall audit debt.
-            </p>
-          </CollapsibleContent>
-        </Collapsible>
-        
-        {/* How Sprinto can help section - restored */}
-        <div className="mt-8 border-t border-gray-200 pt-6">
+            {/* Remaining recommendations - collapsible */}
+            <CollapsibleContent className="space-y-4 pt-2">
+              {recommendations.slice(1).map((recommendation, index) => (
+                <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white">
+                  <div className="flex">
+                    <div className="mr-4 mt-1">
+                      {getRecommendationIcon(recommendation.title)}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-medium">{recommendation.title}</h3>
+                        <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(recommendation.priority)}`}>
+                          {recommendation.priority} Priority
+                        </span>
+                      </div>
+                      
+                      <p className="text-gray-700">{recommendation.description}</p>
+                      
+                      <div className="mt-4 flex items-center text-xs text-gray-500">
+                        <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Estimated time to implement: {(index % 3 === 0) ? '1-2 weeks' : (index % 3 === 1) ? '3-6 weeks' : '2-4 weeks'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <p className="text-sm text-gray-500 italic mt-2">
+                These recommendations are based on your audit debt assessment. Implementing them will help reduce your overall audit debt.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+        </CardContent>
+      </Card>
+      
+      {/* How Sprinto can help section - independent */}
+      <Card className="mt-8">
+        <CardContent className="pt-6">
           <h3 className="text-lg font-medium mb-4">How Sprinto Can Help</h3>
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
             <p className="text-gray-700">
@@ -133,10 +148,17 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
             <p className="mt-4 text-gray-700">
               Schedule a personalized demo to see how Sprinto can help your organization reduce audit debt and achieve compliance with less effort.
             </p>
+            
+            {/* CTA Button */}
+            <div className="mt-6 flex justify-center">
+              <Button className="bg-sprinto-orange hover:bg-opacity-90 text-white">
+                Schedule a Demo
+              </Button>
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
