@@ -47,9 +47,9 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
   };
 
   return (
-    <div className="mt-8 max-w-3xl mx-auto">
+    <>
       {/* Recommendations Section */}
-      <Card className="border-t-4 border-sprinto-blue">
+      <Card className="border-t-4 border-sprinto-blue max-w-3xl mx-auto">
         <CardHeader className="pb-2">
           <CardTitle className="text-xl flex items-center justify-between">
             Recommended Actions to Reduce Audit Debt
@@ -66,36 +66,36 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
         </CardHeader>
         
         <CardContent>
-          <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
-            {/* First recommendation - always visible */}
-            {recommendations.length > 0 && (
-              <div className="p-4 border border-gray-200 rounded-lg bg-white">
-                <div className="flex">
-                  <div className="mr-4 mt-1">
-                    {getRecommendationIcon(recommendations[0].title)}
+          {/* First recommendation - always visible */}
+          {recommendations.length > 0 && (
+            <div className="p-4 border border-gray-200 rounded-lg bg-white">
+              <div className="flex">
+                <div className="mr-4 mt-1">
+                  {getRecommendationIcon(recommendations[0].title)}
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-medium">{recommendations[0].title}</h3>
+                    <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(recommendations[0].priority)}`}>
+                      {recommendations[0].priority} Priority
+                    </span>
                   </div>
                   
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-medium">{recommendations[0].title}</h3>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(recommendations[0].priority)}`}>
-                        {recommendations[0].priority} Priority
-                      </span>
-                    </div>
-                    
-                    <p className="text-gray-700">{recommendations[0].description}</p>
-                    
-                    <div className="mt-4 flex items-center text-xs text-gray-500">
-                      <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                      Estimated time to implement: 2-4 weeks
-                    </div>
+                  <p className="text-gray-700">{recommendations[0].description}</p>
+                  
+                  <div className="mt-4 flex items-center text-xs text-gray-500">
+                    <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Estimated time to implement: 2-4 weeks
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Remaining recommendations - collapsible */}
-            <CollapsibleContent className="space-y-4 pt-2">
+          {/* Collapsible section for remaining recommendations */}
+          <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4 mt-4">
+            <CollapsibleContent className="space-y-4">
               {recommendations.slice(1).map((recommendation, index) => (
                 <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white">
                   <div className="flex">
@@ -131,7 +131,7 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
       </Card>
       
       {/* How Sprinto can help section - independent */}
-      <Card className="mt-8">
+      <Card className="mt-8 max-w-3xl mx-auto">
         <CardContent className="pt-6">
           <h3 className="text-lg font-medium mb-4">How Sprinto Can Help</h3>
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
@@ -149,16 +149,16 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
               Schedule a personalized demo to see how Sprinto can help your organization reduce audit debt and achieve compliance with less effort.
             </p>
             
-            {/* CTA Button */}
-            <div className="mt-6 flex justify-center">
-              <Button className="bg-sprinto-orange hover:bg-opacity-90 text-white">
-                Schedule a Demo
+            {/* CTA Button - Now full width */}
+            <div className="mt-6">
+              <Button className="bg-sprinto-orange hover:bg-opacity-90 text-white w-full py-6 text-base font-medium">
+                Schedule a Free Demo to See How Sprinto Can Help You Eliminate Audit Debt
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 };
 
