@@ -1,16 +1,15 @@
-
 import { FC, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RecommendationItem } from '@/types/scorecard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
-
 interface RecommendationsProps {
   recommendations: RecommendationItem[];
 }
-
-const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
+const Recommendations: FC<RecommendationsProps> = ({
+  recommendations
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Helper function to get icon based on recommendation title
@@ -45,20 +44,13 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
         return 'bg-blue-100 text-blue-800';
     }
   };
-
-  return (
-    <>
+  return <>
       {/* Recommendations Section - Adjusted width to 10% less than before */}
       <Card className="border-t-4 border-sprinto-blue max-w-[calc(3xl*1.08)] mx-auto mt-10">
         <CardHeader className="pb-2">
           <CardTitle className="text-xl flex items-center justify-between">
             Recommended Actions to Reduce Audit Debt
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-              onClick={() => setIsOpen(!isOpen)}
-            >
+            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 hover:bg-gray-100" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? "Collapse" : "Expand"} All
               <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
             </Button>
@@ -67,8 +59,7 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
         
         <CardContent>
           {/* First recommendation - always visible */}
-          {recommendations.length > 0 && (
-            <div className="p-4 border border-gray-200 rounded-lg bg-white">
+          {recommendations.length > 0 && <div className="p-4 border border-gray-200 rounded-lg bg-white">
               <div className="flex">
                 <div className="mr-4 mt-1">
                   {getRecommendationIcon(recommendations[0].title)}
@@ -85,19 +76,17 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
                   <p className="text-gray-700">{recommendations[0].description}</p>
                   
                   <div className="mt-4 flex items-center text-xs text-gray-500">
-                    <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                     Estimated time to implement: 2-4 weeks
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* Collapsible section for remaining recommendations */}
           <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4 mt-4">
             <CollapsibleContent className="space-y-4">
-              {recommendations.slice(1).map((recommendation, index) => (
-                <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white">
+              {recommendations.slice(1).map((recommendation, index) => <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white">
                   <div className="flex">
                     <div className="mr-4 mt-1">
                       {getRecommendationIcon(recommendation.title)}
@@ -114,13 +103,12 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
                       <p className="text-gray-700">{recommendation.description}</p>
                       
                       <div className="mt-4 flex items-center text-xs text-gray-500">
-                        <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        Estimated time to implement: {(index % 3 === 0) ? '1-2 weeks' : (index % 3 === 1) ? '3-6 weeks' : '2-4 weeks'}
+                        <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                        Estimated time to implement: {index % 3 === 0 ? '1-2 weeks' : index % 3 === 1 ? '3-6 weeks' : '2-4 weeks'}
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                </div>)}
 
               <p className="text-sm text-gray-500 italic mt-2">
                 These recommendations are based on your audit debt assessment. Implementing them will help reduce your overall audit debt.
@@ -145,9 +133,7 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
               <li>Streamlining audit preparation with purpose-built tools</li>
               <li>Offering expert guidance throughout your compliance journey</li>
             </ul>
-            <p className="mt-4 text-gray-700">
-              Schedule a personalized demo to see how Sprinto can help your organization reduce audit debt and achieve compliance with less effort.
-            </p>
+            
             
             {/* CTA Button - Full width */}
             <div className="mt-6">
@@ -158,8 +144,6 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
           </div>
         </CardContent>
       </Card>
-    </>
-  );
+    </>;
 };
-
 export default Recommendations;
