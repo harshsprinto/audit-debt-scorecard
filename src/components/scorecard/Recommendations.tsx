@@ -45,8 +45,8 @@ const Recommendations: FC<RecommendationsProps> = ({
     }
   };
   return <>
-      {/* Recommendations Section - Adjusted width to 10% less than before */}
-      <Card className="border-t-4 border-sprinto-blue max-w-[calc(3xl*1.08)] mx-auto mt-10">
+      {/* Recommendations Section - Decreased width by 10% */}
+      <Card className="border-t-4 border-sprinto-blue max-w-[calc(3xl*0.972)] mx-auto mt-10">
         <CardHeader className="pb-2">
           <CardTitle className="text-xl flex items-center justify-between">
             Recommended Actions to Reduce Audit Debt
@@ -118,8 +118,8 @@ const Recommendations: FC<RecommendationsProps> = ({
         </CardContent>
       </Card>
       
-      {/* How Sprinto can help section - Adjusted width to 10% less than before */}
-      <Card className="mt-10 max-w-[calc(3xl*1.08)] mx-auto">
+      {/* How Sprinto can help section - Decreased width by 10% */}
+      <Card className="mt-10 max-w-[calc(3xl*0.972)] mx-auto">
         <CardContent className="pt-6">
           <h3 className="text-lg font-medium mb-4">How Sprinto Can Help</h3>
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
