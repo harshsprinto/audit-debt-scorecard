@@ -51,19 +51,25 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
       <CardHeader className="pb-2">
         <CardTitle className="text-xl flex items-center justify-between">
           Recommended Actions to Reduce Audit Debt
-          <CollapsibleTrigger asChild onClick={() => setIsOpen(!isOpen)}>
-            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 hover:bg-gray-100">
-              {isOpen ? "Collapse" : "Expand"} All
-              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
-            </Button>
-          </CollapsibleTrigger>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? "Collapse" : "Expand"} All
+            <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
+          </Button>
         </CardTitle>
       </CardHeader>
       
       <CardContent>
         <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
           {/* Preview - always visible */}
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+          <div 
+            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer" 
+            onClick={() => setIsOpen(!isOpen)}
+          >
             <div className="flex items-center">
               <div className="mr-4 text-blue-500">
                 {recommendations[0] && getRecommendationIcon(recommendations[0].title)}
