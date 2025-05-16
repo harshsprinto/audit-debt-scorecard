@@ -1,127 +1,114 @@
 
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BadgeCheck, AlertTriangle, Clock, Settings, Database, Trash2, TrendingUp } from 'lucide-react';
 import { RecommendationItem } from '@/types/scorecard';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Button } from '@/components/ui/button';
+import { ChevronDown } from 'lucide-react';
 
 interface RecommendationsProps {
   recommendations: RecommendationItem[];
 }
 
 const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case 'High':
-        return <AlertTriangle className="h-5 w-5 text-red-500" />;
-      case 'Medium':
-        return <Clock className="h-5 w-5 text-yellow-500" />;
-      case 'Low':
-        return <BadgeCheck className="h-5 w-5 text-green-500" />;
-      default:
-        return null;
-    }
-  };
+  const [isOpen, setIsOpen] = useState(false);
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'High':
-        return 'border-red-200 bg-red-50';
-      case 'Medium':
-        return 'border-yellow-200 bg-yellow-50';
-      case 'Low':
-        return 'border-green-200 bg-green-50';
-      default:
-        return 'border-gray-200 bg-gray-50';
-    }
-  };
-
-  const getRecommendationIcon = (title: string) => {
-    if (title.toLowerCase().includes('centralized') || title.toLowerCase().includes('platform')) {
-      return <Settings className="h-6 w-6 text-blue-500" />;
-    } else if (title.toLowerCase().includes('automate') || title.toLowerCase().includes('evidence')) {
-      return <Database className="h-6 w-6 text-purple-500" />;
-    } else if (title.toLowerCase().includes('eliminate') || title.toLowerCase().includes('redundant')) {
-      return <Trash2 className="h-6 w-6 text-orange-500" />;
+  // Helper function to get icon based on recommendation title
+  const getRecommendationIcon = (title: string): JSX.Element => {
+    if (title.toLowerCase().includes('centraliz') || title.toLowerCase().includes('platform')) {
+      return <div className="text-blue-500 bg-blue-100 p-2 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>;
+    } else if (title.toLowerCase().includes('evidence') || title.toLowerCase().includes('automat')) {
+      return <div className="text-purple-500 bg-purple-100 p-2 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>;
+    } else if (title.toLowerCase().includes('control') || title.toLowerCase().includes('review')) {
+      return <div className="text-blue-500 bg-blue-100 p-2 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>;
+    } else if (title.toLowerCase().includes('eliminat') || title.toLowerCase().includes('redundant') || title.toLowerCase().includes('secur')) {
+      return <div className="text-orange-500 bg-orange-100 p-2 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6l3 1m0 0l-3 9a5 5 0 0 0 6 0l3-9m-6 0l6-2m6 2l3-1m-3 1l-3 9a5 5 0 0 1-6 0m12-2v-2m0 0V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5m9-4v-2m0 0a2 2 0 0 0-2 2m2-2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2m-6-4v-2m0 0a2 2 0 0 0-2 2m2-2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2"></path></svg></div>;
+    } else if (title.toLowerCase().includes('develop') || title.toLowerCase().includes('readiness')) {
+      return <div className="text-blue-500 bg-blue-100 p-2 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>;
     } else if (title.toLowerCase().includes('streamline') || title.toLowerCase().includes('workflow')) {
-      return <TrendingUp className="h-6 w-6 text-green-500" />;
+      return <div className="text-green-500 bg-green-100 p-2 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></div>;
     } else {
-      return <Settings className="h-6 w-6 text-blue-500" />;
+      return <div className="text-blue-500 bg-blue-100 p-2 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9L13 2z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div>;
+    }
+  };
+
+  // Helper function to get color for priority badge
+  const getPriorityColor = (priority: string): string => {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-blue-100 text-blue-800';
     }
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto mt-8">
-      <CardHeader>
-        <CardTitle className="text-xl">Recommended Actions to Reduce Audit Debt</CardTitle>
+    <Card className="mt-8 border-t-4 border-sprinto-blue">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl flex items-center justify-between">
+          Recommended Actions to Reduce Audit Debt
+          <CollapsibleTrigger asChild onClick={() => setIsOpen(!isOpen)}>
+            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 hover:bg-gray-100">
+              {isOpen ? "Collapse" : "Expand"} All
+              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
+            </Button>
+          </CollapsibleTrigger>
+        </CardTitle>
       </CardHeader>
       
       <CardContent>
-        <div className="space-y-4">
-          {recommendations.map((item, index) => (
-            <div 
-              key={index} 
-              className={`p-4 rounded-lg border ${getPriorityColor(item.priority)}`}
-            >
-              <div className="flex items-start gap-3">
-                <div className="mt-1 flex flex-col items-center">
-                  {getRecommendationIcon(item.title)}
-                  <div className="mt-2">
-                    {getPriorityIcon(item.priority)}
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium text-gray-800">
-                    {item.title}
-                    <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
-                      item.priority === 'High' ? 'bg-red-100 text-red-800' :
-                      item.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      {item.priority} Priority
-                    </span>
-                  </h4>
-                  
-                  <p className="text-gray-600 mt-1">
-                    {item.description}
-                  </p>
-                </div>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
+          {/* Preview - always visible */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+            <div className="flex items-center">
+              <div className="mr-4 text-blue-500">
+                {recommendations[0] && getRecommendationIcon(recommendations[0].title)}
+              </div>
+              <div>
+                <h3 className="font-medium">{recommendations[0]?.title || "Implement a Centralized Compliance Platform"}</h3>
+                <p className="text-sm text-gray-500">Click to {isOpen ? "collapse" : "expand"} all recommendations</p>
               </div>
             </div>
-          ))}
-        </div>
-        
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <h3 className="font-medium text-gray-800 mb-2">How Sprinto Eliminates Audit Debt:</h3>
-          
-          <ul className="space-y-3 text-gray-600">
-            <li className="flex items-center">
-              <Database className="h-5 w-5 text-blue-500 mr-3" />
-              <span>Automates evidence collection to reduce compliance effort by up to 90%</span>
-            </li>
-            <li className="flex items-center">
-              <Settings className="h-5 w-5 text-blue-500 mr-3" />
-              <span>Centralizes compliance tasks, reducing oversight gaps</span>
-            </li>
-            <li className="flex items-center">
-              <TrendingUp className="h-5 w-5 text-blue-500 mr-3" />
-              <span>Monitors compliance continuously, preventing policy drift</span>
-            </li>
-            <li className="flex items-center">
-              <Trash2 className="h-5 w-5 text-blue-500 mr-3" />
-              <span>Eliminates redundant efforts and streamlines compliance workflows</span>
-            </li>
-          </ul>
-          
-          <div className="mt-6">
-            <button
-              onClick={() => window.open('https://sprinto.com/get-a-demo/?utm_source=audit+debt+scorecard', '_blank')}
-              className="w-full py-2 bg-sprinto-orange hover:bg-opacity-90 text-white rounded-md transition-colors duration-200"
-            >
-              Take Control of Your Audit Debt: Book a Demo with Us Now
-            </button>
+            <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${isOpen ? "transform rotate-180" : ""}`} />
           </div>
-        </div>
+
+          {/* Expanded content */}
+          <CollapsibleContent className="space-y-4 pt-2">
+            {recommendations.map((recommendation, index) => (
+              <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white">
+                <div className="flex">
+                  <div className="mr-4 mt-1">
+                    {getRecommendationIcon(recommendation.title)}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-medium">{recommendation.title}</h3>
+                      <span className={`px-2 py-1 text-xs rounded-full ${getPriorityColor(recommendation.priority)}`}>
+                        {recommendation.priority} Priority
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-700">{recommendation.description}</p>
+                    
+                    <div className="mt-4 flex items-center text-xs text-gray-500">
+                      <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      Estimated time to implement: {(index % 3 === 0) ? '2-4 weeks' : (index % 3 === 1) ? '1-2 weeks' : '3-6 weeks'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <p className="text-sm text-gray-500 italic mt-2">
+              These recommendations are based on your audit debt assessment. Implementing them will help reduce your overall audit debt.
+            </p>
+          </CollapsibleContent>
+        </Collapsible>
       </CardContent>
     </Card>
   );
