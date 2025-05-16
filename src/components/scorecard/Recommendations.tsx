@@ -1,3 +1,4 @@
+
 import { FC, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RecommendationItem } from '@/types/scorecard';
@@ -47,8 +48,8 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
 
   return (
     <>
-      {/* Recommendations Section - Added top margin and increased width by 20% */}
-      <Card className="border-t-4 border-sprinto-blue max-w-[calc(3xl*1.2)] mx-auto mt-10">
+      {/* Recommendations Section - Adjusted width to 10% less than before */}
+      <Card className="border-t-4 border-sprinto-blue max-w-[calc(3xl*1.08)] mx-auto mt-10">
         <CardHeader className="pb-2">
           <CardTitle className="text-xl flex items-center justify-between">
             Recommended Actions to Reduce Audit Debt
@@ -129,8 +130,8 @@ const Recommendations: FC<RecommendationsProps> = ({ recommendations }) => {
         </CardContent>
       </Card>
       
-      {/* How Sprinto can help section - Added margin top and increased width by 20% */}
-      <Card className="mt-10 max-w-[calc(3xl*1.2)] mx-auto">
+      {/* How Sprinto can help section - Adjusted width to 10% less than before */}
+      <Card className="mt-10 max-w-[calc(3xl*1.08)] mx-auto">
         <CardContent className="pt-6">
           <h3 className="text-lg font-medium mb-4">How Sprinto Can Help</h3>
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
