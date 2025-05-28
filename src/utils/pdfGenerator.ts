@@ -115,6 +115,43 @@ export const generatePDF = (
     
     yPos = doc.lastAutoTable.finalY + 10;
     
+    // Assessment Overview section - updated to reflect streamlined assessment
+    yPos = checkForNewPage(yPos, 60);
+    doc.setFontSize(12);
+    doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
+    doc.text('ASSESSMENT OVERVIEW', 20, yPos);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    yPos += 10;
+    
+    const assessmentText = "This streamlined assessment evaluates your organization's audit debt across 5 critical areas through 15 focused questions. Our scoring algorithm incorporates both direct responses and intelligent inferences to provide a comprehensive view of your compliance maturity.";
+    const assessmentLines = doc.splitTextToSize(assessmentText, pageWidth - 40);
+    doc.text(assessmentLines, 20, yPos);
+    yPos += assessmentLines.length * 4 + 8;
+    
+    // Areas Assessed section
+    doc.setFontSize(10);
+    doc.setTextColor(sprintoOrange[0], sprintoOrange[1], sprintoOrange[2]);
+    doc.text('AREAS ASSESSED:', 20, yPos);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(8);
+    yPos += 8;
+    
+    const assessedAreas = [
+      '• Compliance Program Maturity - Foundation and governance',
+      '• Tooling & Automation - Process efficiency and technology adoption',
+      '• Security Operations & Controls - Risk management and monitoring',
+      '• Audit Readiness - Preparation and business impact',
+      '• Change Management & Vendor Risk - Risk tracking and vendor oversight'
+    ];
+    
+    assessedAreas.forEach((area, index) => {
+      doc.text(area, 25, yPos + (index * 5));
+    });
+    yPos += assessedAreas.length * 5 + 10;
+    
     // Key Recommendations section - with better spacing
     yPos = checkForNewPage(yPos, 60);
     doc.setFontSize(12);
@@ -151,8 +188,8 @@ export const generatePDF = (
     
     yPos += 10;
     
-    // New content for What This Means for Your Business
-    const businessImpactText = "Your organization has identified areas of audit debt that, if unaddressed, could lead to operational inefficiencies, compliance issues, and potential revenue loss. Taking proactive measures now can mitigate risks, secure deals, and improve compliance posture.";
+    // Updated content for What This Means for Your Business
+    const businessImpactText = "Your organization's audit debt assessment reveals specific areas where proactive investment can reduce compliance risks, improve operational efficiency, and strengthen your market position. The streamlined evaluation focuses on the most impactful factors for business success.";
     const businessImpactLines = doc.splitTextToSize(businessImpactText, pageWidth - 40);
     doc.text(businessImpactLines, 20, yPos);
     yPos += businessImpactLines.length * 4 + 8;
@@ -163,7 +200,7 @@ export const generatePDF = (
     
     if (criticalSection) {
       yPos = checkForNewPage(yPos, 25);
-      const criticalInsight = `Focus Area: ${criticalSection.title} Audit Debt requires immediate attention. Organizations with similar profiles typically see a 30-40% reduction in audit preparation time after addressing this area.`;
+      const criticalInsight = `Priority Focus: ${criticalSection.title} Audit Debt requires immediate attention. Organizations addressing this area typically see 30-40% improvement in compliance efficiency within 6 months.`;
       const criticalLines = doc.splitTextToSize(criticalInsight, pageWidth - 40);
       doc.text(criticalLines, 20, yPos);
       yPos += criticalLines.length * 4 + 8;
@@ -171,15 +208,15 @@ export const generatePDF = (
     
     if (bestSection) {
       yPos = checkForNewPage(yPos, 25);
-      const strengthInsight = `Strength: Your ${bestSection.title} Audit Debt is minimal. Continue to maintain excellence in this area while focusing resources on higher-debt domains.`;
+      const strengthInsight = `Strength Area: Your ${bestSection.title} shows minimal audit debt. This foundation can support improvements in other areas while maintaining operational excellence.`;
       const strengthLines = doc.splitTextToSize(strengthInsight, pageWidth - 40);
       doc.text(strengthLines, 20, yPos);
       yPos += strengthLines.length * 4 + 8;
     }
     
-    // Add industry benchmark with proper spacing
+    // Add updated industry benchmark with proper spacing
     yPos = checkForNewPage(yPos, 25);
-    const benchmarkText = `Industry Benchmark: Mid-market companies similar to yours typically achieve a ${scoreResults.overallScore > 50 ? 'lower' : 'higher'} overall score of ${Math.min(85, Math.max(40, scoreResults.overallScore + (scoreResults.overallScore > 50 ? -15 : 15)))}%. The most successful organizations invest in compliance automation to reduce manual efforts by up to 70%.`;
+    const benchmarkText = `Methodology Note: This assessment combines direct responses with intelligent inferences based on compliance best practices. Organizations with similar profiles typically achieve ${scoreResults.overallScore > 60 ? 'similar' : 'higher'} scores after implementing targeted improvements.`;
     const benchmarkLines = doc.splitTextToSize(benchmarkText, pageWidth - 40);
     doc.text(benchmarkLines, 20, yPos);
     
@@ -192,11 +229,11 @@ export const generatePDF = (
     doc.text('BUSINESS IMPACT OF AUDIT DEBT', 20, yPos);
     
     const impactPoints = [
-      '• Failed compliance audits',
-      '• Lost business opportunities',
-      '• Costly remediation efforts',
-      '• Security vulnerabilities',
-      '• Operational inefficiencies'
+      '• Failed compliance audits and regulatory penalties',
+      '• Lost business opportunities and delayed funding',
+      '• Costly last-minute remediation efforts',
+      '• Security vulnerabilities and operational risks',
+      '• Reduced stakeholder confidence and market position'
     ];
     
     // Create two columns for impact points with better spacing
@@ -223,7 +260,7 @@ export const generatePDF = (
     doc.text('TAKE CONTROL OF YOUR AUDIT DEBT', pageWidth / 2, yPos + 12, { align: 'center' });
     
     doc.setFontSize(9);
-    doc.text('Schedule a demo to eliminate audit debt for your business', pageWidth / 2, yPos + 20, { align: 'center' });
+    doc.text('Schedule a demo to reduce audit debt and strengthen your compliance program', pageWidth / 2, yPos + 20, { align: 'center' });
     
     doc.setFontSize(10);
     doc.text('sales@sprinto.com', pageWidth / 2, yPos + 28, { align: 'center' });
