@@ -94,17 +94,6 @@ export const scorecardSections = [
         ]
       },
       {
-        id: 'evidenceCollection',
-        text: 'How automated is evidence collection across frameworks?',
-        type: 'select' as QuestionType,
-        options: [
-          { value: 'automated', label: 'Automatically collected with real-time updates' },
-          { value: 'centralizedManual', label: 'Manually collected but centrally stored' },
-          { value: 'adhoc', label: 'Ad-hoc collection when needed' },
-          { value: 'none', label: 'We don\'t formally collect evidence' }
-        ]
-      },
-      {
         id: 'complianceGaps',
         text: 'Are there automated alerts for compliance gaps or control failures?',
         type: 'select' as QuestionType,
@@ -143,35 +132,13 @@ export const scorecardSections = [
           { value: 'adhoc', label: 'Only ad-hoc monitoring' },
           { value: 'none', label: 'No monitoring in place' }
         ]
-      },
-      {
-        id: 'incidentResponse',
-        text: 'Do you have incident response documentation?',
-        type: 'select' as QuestionType,
-        options: [
-          { value: 'documentedAndTested', label: 'Yes, documented and regularly tested' },
-          { value: 'documented', label: 'Yes, documented but not regularly tested' },
-          { value: 'informal', label: 'Informal processes only' },
-          { value: 'none', label: 'No incident response plan' }
-        ]
-      },
-      {
-        id: 'controlMaturity',
-        text: 'How are your controls documented and reviewed?',
-        type: 'select' as QuestionType,
-        options: [
-          { value: 'comprehensiveReviewed', label: 'Comprehensively documented and regularly reviewed' },
-          { value: 'documented', label: 'Documented but not regularly reviewed' },
-          { value: 'partial', label: 'Partially documented' },
-          { value: 'none', label: 'Minimal or no documentation' }
-        ]
       }
     ]
   },
   {
     id: 'auditReadiness',
     title: 'Audit Readiness & Risk Management',
-    description: 'Let\'s assess how prepared you are for compliance audits and how you manage risks.',
+    description: 'Let\'s assess how prepared you are for compliance audits.',
     questions: [
       {
         id: 'lastAudit',
@@ -205,17 +172,6 @@ export const scorecardSections = [
           { value: 'occasionally', label: 'Occasionally' },
           { value: 'frequently', label: 'Frequently' }
         ]
-      },
-      {
-        id: 'riskAssessment',
-        text: 'How often are risk assessments conducted?',
-        type: 'select' as QuestionType,
-        options: [
-          { value: 'quarterly', label: 'Quarterly or more frequently' },
-          { value: 'biannual', label: 'Biannually' },
-          { value: 'annual', label: 'Annually' },
-          { value: 'adhoc', label: 'Ad-hoc or never' }
-        ]
       }
     ]
   },
@@ -224,17 +180,6 @@ export const scorecardSections = [
     title: 'Change Management & Vendor Risk',
     description: 'Let\'s evaluate your change management processes and vendor risk management.',
     questions: [
-      {
-        id: 'changeApproval',
-        text: 'How are infrastructure or IT changes approved and documented?',
-        type: 'select' as QuestionType,
-        options: [
-          { value: 'formalAutomated', label: 'Formal process with automated workflow' },
-          { value: 'formalManual', label: 'Formal process with manual documentation' },
-          { value: 'informal', label: 'Informal process' },
-          { value: 'none', label: 'No formal approval process' }
-        ]
-      },
       {
         id: 'changeRiskTracking',
         text: 'Is there a clear protocol for tracking change-related risks?',

@@ -1,4 +1,3 @@
-
 import { FormData, AuditDebtScore, RiskLevel, RecommendationItem } from '@/types/scorecard';
 
 // Define the scoring logic
@@ -14,10 +13,10 @@ export const calculateScore = (formData: FormData): AuditDebtScore => {
 
   // Calculate section scores
   const complianceMaturityScore = calculateComplianceMaturityScore(formData.sections.complianceMaturity);
-  const toolingAutomationScore = calculateToolingAutomationScore(formData.sections.toolingAutomation);
-  const securityOperationsScore = calculateSecurityOperationsScore(formData.sections.securityOperations);
+  const toolingAutomationScore = calculateToolingAutomationScore(formData.sections.toolingAutomation, formData.sections);
+  const securityOperationsScore = calculateSecurityOperationsScore(formData.sections.securityOperations, formData.sections);
   const auditReadinessScore = calculateAuditReadinessScore(formData.sections.auditReadiness);
-  const changeManagementScore = calculateChangeManagementScore(formData.sections.changeManagement || {});
+  const changeManagementScore = calculateChangeManagementScore(formData.sections.changeManagement || {}, formData.sections);
 
   // Calculate weighted overall score (0-100)
   const overallScore = Math.round(
@@ -90,6 +89,60 @@ const determineRiskLevel = (score: number, maxScore: number): RiskLevel => {
     return 'Significant';
   } else {
     return 'High';
+  }
+};
+
+// Helper function to infer scores based on other responses
+const inferScore = (sections: Record<string, any>, inferenceType: string): number => {
+  switch (inferenceType) {
+    case 'evidenceCollection':
+      // Infer evidence collection from workflows automation
+      const workflows = sections.toolingAutomation?.workflows;
+      if (workflows === 'fullyAutomated') return 5;
+      if (workflows === 'partiallyAutomated') return 3;
+      if (workflows === 'manual') return 1;
+      return 0;
+    
+    case 'incidentResponse':
+      // Infer incident response from compliance team and security policies
+      const complianceTeam = sections.complianceMaturity?.complianceTeam;
+      const securityPolicies = sections.complianceMaturity?.securityPolicies;
+      
+      if ((complianceTeam === 'dedicatedTeam' || complianceTeam === 'dedicatedPerson') && 
+          securityPolicies === 'documentedAndReviewed') return 5;
+      if (complianceTeam === 'partTime' && securityPolicies === 'documented') return 3;
+      if (securityPolicies === 'outdated') return 1;
+      return 0;
+    
+    case 'controlMaturity':
+      // Infer control maturity from compliance team and audit readiness
+      const lastAudit = sections.auditReadiness?.lastAudit;
+      const team = sections.complianceMaturity?.complianceTeam;
+      
+      if ((team === 'dedicatedTeam' || team === 'dedicatedPerson') && 
+          (lastAudit === 'sixMonths' || lastAudit === 'oneYear')) return 5;
+      if (team === 'partTime' && lastAudit === 'oneYear') return 3;
+      if (lastAudit === 'twoYears') return 1;
+      return 0;
+    
+    case 'riskAssessment':
+      // Infer risk assessment from audit cadence
+      const audit = sections.auditReadiness?.lastAudit;
+      if (audit === 'sixMonths') return 5;
+      if (audit === 'oneYear') return 3;
+      if (audit === 'twoYears') return 2;
+      return 0;
+    
+    case 'changeApproval':
+      // Infer change approval from security policies
+      const policies = sections.complianceMaturity?.securityPolicies;
+      if (policies === 'documentedAndReviewed') return 5;
+      if (policies === 'documented') return 3;
+      if (policies === 'outdated') return 1;
+      return 0;
+    
+    default:
+      return 0;
   }
 };
 
@@ -173,7 +226,7 @@ const calculateComplianceMaturityScore = (section: Record<string, any>) => {
   return { score, maxScore };
 };
 
-const calculateToolingAutomationScore = (section: Record<string, any>) => {
+const calculateToolingAutomationScore = (section: Record<string, any>, allSections: Record<string, any>) => {
   let score = 0;
   const maxScore = 20; // Maximum possible points for this section
   
@@ -213,23 +266,8 @@ const calculateToolingAutomationScore = (section: Record<string, any>) => {
     }
   }
   
-  // Question 3: How automated is evidence collection across frameworks?
-  if (section.evidenceCollection) {
-    switch (section.evidenceCollection) {
-      case 'automated':
-        score += 5;
-        break;
-      case 'centralizedManual':
-        score += 3;
-        break;
-      case 'adhoc':
-        score += 1;
-        break;
-      case 'none':
-        score += 0;
-        break;
-    }
-  }
+  // Question 3 (removed): Evidence collection - inferred from workflows
+  score += inferScore(allSections, 'evidenceCollection');
   
   // Question 4: Are there automated alerts for compliance gaps or control failures?
   if (section.complianceGaps) {
@@ -252,7 +290,7 @@ const calculateToolingAutomationScore = (section: Record<string, any>) => {
   return { score, maxScore };
 };
 
-const calculateSecurityOperationsScore = (section: Record<string, any>) => {
+const calculateSecurityOperationsScore = (section: Record<string, any>, allSections: Record<string, any>) => {
   let score = 0;
   const maxScore = 20; // Maximum possible points for this section
   
@@ -292,41 +330,11 @@ const calculateSecurityOperationsScore = (section: Record<string, any>) => {
     }
   }
   
-  // Question 3: Do you have incident response documentation?
-  if (section.incidentResponse) {
-    switch (section.incidentResponse) {
-      case 'documentedAndTested':
-        score += 5;
-        break;
-      case 'documented':
-        score += 3;
-        break;
-      case 'informal':
-        score += 1;
-        break;
-      case 'none':
-        score += 0;
-        break;
-    }
-  }
+  // Question 3 (removed): Incident response - inferred from other sections
+  score += inferScore(allSections, 'incidentResponse');
   
-  // Question 4: How are your controls documented and reviewed?
-  if (section.controlMaturity) {
-    switch (section.controlMaturity) {
-      case 'comprehensiveReviewed':
-        score += 5;
-        break;
-      case 'documented':
-        score += 3;
-        break;
-      case 'partial':
-        score += 1;
-        break;
-      case 'none':
-        score += 0;
-        break;
-    }
-  }
+  // Question 4 (removed): Control maturity - inferred from other sections
+  score += inferScore(allSections, 'controlMaturity');
 
   return { score, maxScore };
 };
@@ -389,49 +397,19 @@ const calculateAuditReadinessScore = (section: Record<string, any>) => {
     }
   }
   
-  // Question 4: How often are risk assessments conducted?
-  if (section.riskAssessment) {
-    switch (section.riskAssessment) {
-      case 'quarterly':
-        score += 5;
-        break;
-      case 'biannual':
-        score += 3;
-        break;
-      case 'annual':
-        score += 2;
-        break;
-      case 'adhoc':
-        score += 0;
-        break;
-    }
-  }
+  // Question 4 (removed): Risk assessment - inferred from audit cadence
+  score += inferScore({ auditReadiness: section }, 'riskAssessment');
 
   return { score, maxScore };
 };
 
-// New function for Change Management score
-const calculateChangeManagementScore = (section: Record<string, any>) => {
+// Modified function for Change Management score
+const calculateChangeManagementScore = (section: Record<string, any>, allSections: Record<string, any>) => {
   let score = 0;
   const maxScore = 20; // Maximum possible points for this section
   
-  // Question 1: How are infrastructure or IT changes approved and documented?
-  if (section.changeApproval) {
-    switch (section.changeApproval) {
-      case 'formalAutomated':
-        score += 5;
-        break;
-      case 'formalManual':
-        score += 3;
-        break;
-      case 'informal':
-        score += 1;
-        break;
-      case 'none':
-        score += 0;
-        break;
-    }
-  }
+  // Question 1 (removed): Change approval - inferred from security policies
+  score += inferScore(allSections, 'changeApproval');
   
   // Question 2: Is there a clear protocol for tracking change-related risks?
   if (section.changeRiskTracking) {
