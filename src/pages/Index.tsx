@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import LeadForm from '@/components/scorecard/LeadForm';
@@ -255,17 +256,22 @@ const Index = () => {
   const renderStep = () => {
     switch (currentStep) {
       case Step.LEAD_FORM:
-        return <div className="py-12">
+        return (
+          <div className="py-8 sm:py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12">
-                <h1 className="text-3xl font-bold text-gray-900 mb-3">Audit Debt Scorecard</h1>
-                <p className="text-lg text-gray-600 max-w-3xl mx-auto text-center">Assess the hidden audit debt in your organization and discover
-actionable steps to resolve it</p>
+              <div className="text-center mb-8 sm:mb-12">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 leading-tight">
+                  Audit Debt Scorecard
+                </h1>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-center leading-relaxed px-4">
+                  Assess the hidden audit debt in your organization and discover actionable steps to resolve it
+                </p>
               </div>
               
               <LeadForm onSubmit={handleLeadFormSubmit} />
             </div>
-          </div>;
+          </div>
+        );
       case Step.SECTION_1:
       case Step.SECTION_2:
       case Step.SECTION_3:
@@ -279,8 +285,9 @@ actionable steps to resolve it</p>
           calculateAndShowResults();
         } : handleNextSection;
         
-        return <div className="py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        return (
+          <div className="py-8 sm:py-12">
+            <div className="max-w-7xl mx-auto">
               <QuestionSection 
                 sectionId={section.id} 
                 title={section.title} 
@@ -294,7 +301,8 @@ actionable steps to resolve it</p>
                 progress={calculateProgress()} 
               />
             </div>
-          </div>;
+          </div>
+        );
       case Step.RESULTS:
         // Make sure we have results before showing this page
         console.log("Rendering results page with data:", { scoreResults, recommendations });
@@ -302,17 +310,22 @@ actionable steps to resolve it</p>
           console.error("No score results available");
           // If no results, calculate them now
           calculateAndShowResults();
-          return <div className="py-12">
+          return (
+            <div className="py-8 sm:py-12">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold">Calculating your results...</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Calculating your results...
+                  </h2>
                 </div>
               </div>
-            </div>;
+            </div>
+          );
         }
         
-        return <div className="py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        return (
+          <div className="py-8 sm:py-12">
+            <div className="max-w-7xl mx-auto">
               <ResultsOverview 
                 userInfo={formData} 
                 scoreResults={scoreResults} 
@@ -321,26 +334,33 @@ actionable steps to resolve it</p>
                 onShareClick={handleShare}
               />
               
-              <Recommendations recommendations={recommendations} />
+              <div className="mt-8">
+                <Recommendations recommendations={recommendations} />
+              </div>
             </div>
-          </div>;
+          </div>
+        );
       case Step.THANK_YOU:
-        return <div className="py-12">
+        return (
+          <div className="py-8 sm:py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <ThankYou userInfo={formData} onDownloadReport={handleDownloadPDF} />
             </div>
-          </div>;
+          </div>
+        );
       default:
         return null;
     }
   };
   
-  return <Layout>
+  return (
+    <Layout>
       {renderStep()}
       
       {/* Booking Consultation Modal */}
       <BookConsultationModal isOpen={isModalOpen} onClose={handleModalClose} userInfo={formData} bookingUrl={bookingUrl} />
-    </Layout>;
+    </Layout>
+  );
 };
 
 export default Index;
